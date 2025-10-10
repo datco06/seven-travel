@@ -41,10 +41,9 @@ const COPY = {
 
 function Register() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, loginWithProvider } = useAuth();
   const { language } = useLanguage();
   const copy = COPY[language];
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
   const [form, setForm] = useState({ name: '', phone: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -127,12 +126,38 @@ function Register() {
         <div className="social-auth">
           <p>{copy.socialTitle}</p>
           <div className="social-auth__buttons">
-            <a className="social-btn google" href={`${API_BASE_URL}/auth/google`}>
+            <button
+              type="button"
+              className="social-btn google"
+              onClick={async () => {
+                setError('');
+                setIsSubmitting(true);
+                try {
+                  await loginWithProvider('google');
+                } catch (err) {
+                  setError(err.message);
+                  setIsSubmitting(false);
+                }
+              }}
+            >
               <i className="fab fa-google" /> {copy.google}
-            </a>
-            <a className="social-btn facebook" href={`${API_BASE_URL}/auth/facebook`}>
+            </button>
+            <button
+              type="button"
+              className="social-btn facebook"
+              onClick={async () => {
+                setError('');
+                setIsSubmitting(true);
+                try {
+                  await loginWithProvider('facebook');
+                } catch (err) {
+                  setError(err.message);
+                  setIsSubmitting(false);
+                }
+              }}
+            >
               <i className="fab fa-facebook-f" /> {copy.facebook}
-            </a>
+            </button>
           </div>
         </div>
         <p className="auth-switch">

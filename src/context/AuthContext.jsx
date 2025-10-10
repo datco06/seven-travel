@@ -33,7 +33,7 @@ function buildAuthEmail(identifier) {
   }
   const digits = sanitizePhoneNumber(trimmed);
   const handle = digits || trimmed.replace(/\s+/g, '');
-  return `${handle}@seven-travel.local`;
+  return `${handle}@seven-travel.app`;
 }
 
 const RAW_INITIAL_TOURS = [
@@ -1346,11 +1346,71 @@ export function AuthProvider({ children }) {
       setCurrentUserId(null);
       return;
     }
-    const matchedLocalUser = users.find((user) => user.email && user.email === supabaseUser.email);
-    if (matchedLocalUser) {
-      setCurrentUserId(matchedLocalUser.id);
+
+    const existing =
+      users.find((user) => user.id === supabaseUser.id) ??
+      (supabaseUser.email ? users.find((user) => user.email === supabaseUser.email) : null);
+
+    if (existing) {
+      if (existing.id !== currentUserId) {
+        setCurrentUserId(existing.id);
+      }
+      return;
     }
-  }, [supabaseUser, users]);
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const {
+          data: profile,
+          error: profileError,
+        } = await supabase.from('profiles').select('*').eq('id', supabaseUser.id).maybeSingle();
+
+        let resolvedProfile = profile;
+        if (profileError && profileError.code !== 'PGRST116') {
+          throw new Error(profileError.message);
+        }
+
+        if (!resolvedProfile) {
+          resolvedProfile = await syncProfileThroughFunction({
+            fullName:
+              supabaseUser.user_metadata?.full_name ??
+              supabaseUser.email ??
+              `Traveler ${supabaseUser.id.slice(0, 6)}`,
+            phoneNumber: supabaseUser.user_metadata?.phone ?? '',
+            role: 'customer',
+          });
+        }
+
+        if (cancelled || !resolvedProfile) {
+          return;
+        }
+
+        mergeProfileIntoState(resolvedProfile, {
+          id: supabaseUser.id,
+          role: resolvedProfile?.role ?? 'customer',
+          name:
+            resolvedProfile?.full_name ??
+            supabaseUser.user_metadata?.full_name ??
+            supabaseUser.email ??
+            `Traveler ${supabaseUser.id.slice(0, 6)}`,
+          email:
+            supabaseUser.email ??
+            buildAuthEmail(supabaseUser.user_metadata?.phone ?? supabaseUser.id),
+          phone: resolvedProfile?.phone_number ?? supabaseUser.user_metadata?.phone ?? '',
+          balance: 0,
+          transactions: [],
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to hydrate Supabase profile', error);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [supabaseUser, users, currentUserId]);
 
   const loginWithSupabase = async ({ email, password }) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -1398,6 +1458,20 @@ export function AuthProvider({ children }) {
       throw new Error(result.error || 'Không thể đồng bộ hồ sơ người dùng.');
     }
     return result.profile;
+  };
+
+  const loginWithProvider = async (provider) => {
+    const redirectTo = typeof window !== 'undefined' ? window.location.origin : undefined;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        scopes: 'email profile',
+      },
+    });
+    if (error) {
+      throw new Error(error.message);
+    }
   };
 
   const mergeProfileIntoState = (profile, fallback) => {
@@ -2054,6 +2128,7 @@ const submitSupportMessage = ({ message }) => {
       supabaseUser,
       authLoading,
       login,
+      loginWithProvider,
       logout,
       register,
       requestTopUp,
@@ -2081,6 +2156,7 @@ const submitSupportMessage = ({ message }) => {
       currentUser,
       supabaseUser,
       authLoading,
+      loginWithProvider,
       users,
       customers,
       tours,
