@@ -205,7 +205,7 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
     });
   };
 
-  const handleBookTour = (tour) => {
+  const handleBookTour = async (tour) => {
     if (!currentUser) {
       setBookingFeedback((prev) => ({
         ...prev,
@@ -244,7 +244,7 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
     }));
 
     try {
-      bookProduct({
+      await bookProduct({
         category: 'tour',
         productId: tour.id,
         amountOverride: totalAmount,

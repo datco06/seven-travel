@@ -65,7 +65,7 @@ function Register() {
 
     setIsSubmitting(true);
     try {
-      register({ name: form.name, phone: form.phone, password: form.password });
+      await register({ name: form.name, phone: form.phone, password: form.password });
       navigate('/tai-khoan');
     } catch (err) {
       setError(err.message);

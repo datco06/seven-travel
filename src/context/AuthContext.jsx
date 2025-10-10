@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { STAY_CATALOG } from '../data/stayCatalog.js';
+import { supabase } from '../lib/supabaseClient.js';
 
 const AuthContext = createContext(null);
 
@@ -17,6 +18,22 @@ function slugify(input) {
     .trim()
     .replace(/[\s-]+/g, '-')
     .replace(/-+/g, '-');
+}
+
+function sanitizePhoneNumber(raw) {
+  if (!raw) return '';
+  return raw.replace(/\D/g, '');
+}
+
+function buildAuthEmail(identifier) {
+  if (!identifier) return '';
+  const trimmed = identifier.trim().toLowerCase();
+  if (trimmed.includes('@')) {
+    return trimmed;
+  }
+  const digits = sanitizePhoneNumber(trimmed);
+  const handle = digits || trimmed.replace(/\s+/g, '');
+  return `${handle}@seven-travel.local`;
 }
 
 const RAW_INITIAL_TOURS = [
@@ -1288,6 +1305,8 @@ const INITIAL_SUPPORT_MESSAGES = [];
 export function AuthProvider({ children }) {
   const [users, setUsers] = useState(INITIAL_USERS);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [supabaseUser, setSupabaseUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [tours, setTours] = useState(INITIAL_TOURS);
   const [transportOptions, setTransportOptions] = useState(INITIAL_TRANSPORT);
   const [stayOptions, setStayOptions] = useState(INITIAL_STAYS);
@@ -1298,7 +1317,113 @@ export function AuthProvider({ children }) {
 
   const currentUser = users.find((user) => user.id === currentUserId) ?? null;
 
-  const login = (phone, password) => {
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) return;
+        setSupabaseUser(data.session?.user ?? null);
+      })
+      .finally(() => {
+        if (mounted) setAuthLoading(false);
+      });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSupabaseUser(session?.user ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!supabaseUser) {
+      setCurrentUserId(null);
+      return;
+    }
+    const matchedLocalUser = users.find((user) => user.email && user.email === supabaseUser.email);
+    if (matchedLocalUser) {
+      setCurrentUserId(matchedLocalUser.id);
+    }
+  }, [supabaseUser, users]);
+
+  const loginWithSupabase = async ({ email, password }) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data.user;
+  };
+
+  const registerWithSupabase = async ({ email, password, options }) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options,
+    });
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data.user ?? data.session?.user ?? null;
+  };
+
+  const syncProfileThroughFunction = async ({ fullName, phoneNumber, role = 'customer' }) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) {
+      throw new Error('Không tìm thấy phiên Supabase.');
+    }
+    const response = await fetch('/.netlify/functions/profile-sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: session.user.id,
+        full_name: fullName,
+        phone_number: phoneNumber,
+        role,
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || 'Không thể đồng bộ hồ sơ người dùng.');
+    }
+    return result.profile;
+  };
+
+  const mergeProfileIntoState = (profile, fallback) => {
+    const composedUser = {
+      id: profile?.id ?? fallback.id,
+      role: profile?.role ?? fallback.role ?? 'customer',
+      name: profile?.full_name ?? fallback.name ?? fallback.email,
+      email: fallback.email,
+      phone: profile?.phone_number ?? fallback.phone ?? '',
+      balance: fallback.balance ?? 0,
+      transactions: fallback.transactions ?? [],
+    };
+    setUsers((prev) => {
+      const exists = prev.some((candidate) => candidate.id === composedUser.id);
+      if (exists) {
+        return prev.map((candidate) =>
+          candidate.id === composedUser.id ? { ...candidate, ...composedUser } : candidate
+        );
+      }
+      return [...prev, composedUser];
+    });
+    setCurrentUserId(composedUser.id);
+    return composedUser;
+  };
+
+  const localLogin = (phone, password) => {
     const normalizedPhone = phone.trim();
     const user = users.find((candidate) => candidate.phone === normalizedPhone);
     if (!user || user.password !== password) {
@@ -1308,34 +1433,111 @@ export function AuthProvider({ children }) {
     return user;
   };
 
-  const logout = () => {
-    setCurrentUserId(null);
+  const login = async (identifier, password) => {
+    const email = buildAuthEmail(identifier);
+    let lastError = null;
+    try {
+      const user = await loginWithSupabase({ email, password });
+      const {
+        data: profile,
+        error: profileError,
+      } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+
+      let resolvedProfile = profile;
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw new Error(profileError.message);
+      }
+
+      if (!resolvedProfile) {
+        resolvedProfile = await syncProfileThroughFunction({
+          fullName: user.user_metadata?.full_name ?? user.email ?? identifier,
+          phoneNumber: user.user_metadata?.phone ?? identifier,
+          role: 'customer',
+        });
+      }
+
+      return mergeProfileIntoState(resolvedProfile, {
+        id: user.id,
+        role: resolvedProfile?.role ?? 'customer',
+        name: resolvedProfile?.full_name ?? user.email,
+        email,
+        phone: resolvedProfile?.phone_number ?? identifier,
+        balance: 0,
+        transactions: [],
+      });
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Đăng nhập thất bại.');
+    }
+
+    try {
+      return localLogin(identifier, password);
+    } catch {
+      throw lastError ?? new Error('Đăng nhập thất bại.');
+    }
   };
 
-  const register = ({ name, phone, password }) => {
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Supabase signOut failed', error);
+    } finally {
+      setCurrentUserId(null);
+      setSupabaseUser(null);
+    }
+  };
+
+  const register = async ({ name, phone, password }) => {
     const normalizedPhone = phone.trim();
     if (!normalizedPhone) {
       throw new Error('Số điện thoại không hợp lệ.');
     }
-    const exists = users.some((candidate) => candidate.phone === normalizedPhone);
-    if (exists) {
-      throw new Error('Số điện thoại đã được sử dụng.');
+    const email = buildAuthEmail(normalizedPhone);
+
+    const supabaseUser = await registerWithSupabase({
+      email,
+      password,
+      options: {
+        data: { full_name: name.trim(), phone: normalizedPhone },
+      },
+    });
+
+    if (!supabaseUser) {
+      throw new Error('Không thể đăng ký tài khoản.');
     }
 
-    const newUser = {
-      id: createId('user'),
-      role: 'customer',
-      name: name.trim(),
-      email: '',
-      phone: normalizedPhone,
-      password,
-      balance: 0,
-      transactions: [],
-    };
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    setUsers((prev) => [...prev, newUser]);
-    setCurrentUserId(newUser.id);
-    return newUser;
+    if (!session) {
+      await loginWithSupabase({ email, password });
+    }
+
+    await syncProfileThroughFunction({
+      fullName: name.trim(),
+      phoneNumber: normalizedPhone,
+      role: 'customer',
+    });
+
+    return mergeProfileIntoState(
+      {
+        id: supabaseUser.id,
+        full_name: name.trim(),
+        phone_number: normalizedPhone,
+        role: 'customer',
+      },
+      {
+        id: supabaseUser.id,
+        role: 'customer',
+        name: name.trim(),
+        email,
+        phone: normalizedPhone,
+        balance: 0,
+        transactions: [],
+      }
+    );
   };
 
   const updateUser = (userId, updater) => {
@@ -1388,7 +1590,7 @@ export function AuthProvider({ children }) {
     return request;
   };
 
-  const bookProduct = ({ category, productId, amountOverride, details }) => {
+  const bookProduct = async ({ category, productId, amountOverride, details }) => {
     if (!currentUser || currentUser.role !== 'customer') {
       throw new Error('Bạn cần đăng nhập với vai trò khách hàng để đặt dịch vụ.');
     }
@@ -1432,16 +1634,63 @@ export function AuthProvider({ children }) {
       ? Number(amountOverride)
       : product.price;
 
-    if (currentUser.balance < resolvedAmount) {
-      throw new Error('Số dư không đủ. Vui lòng nạp thêm tiền.');
+    const timestamp = new Date().toISOString();
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      throw new Error('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
     }
 
-    const bookingId = createId('booking');
-    const timestamp = new Date().toISOString();
+    const bookingPayload = {
+      items: [
+        {
+          product_type: category,
+          product_id: product.id,
+          title: product.name,
+          start_date: details?.startDate ?? null,
+          end_date: details?.endDate ?? null,
+          quantity: details?.quantity ?? 1,
+          unit_price: resolvedAmount,
+          currency: details?.currency ?? 'VND',
+          metadata: details ?? {},
+        },
+      ],
+      total_amount: resolvedAmount,
+      currency: details?.currency ?? 'VND',
+      guest_count: details?.guestCount ?? 1,
+      notes: details?.notes ?? '',
+      start_date: details?.startDate ?? null,
+      end_date: details?.endDate ?? null,
+    };
+
+    let remoteBooking = null;
+    try {
+      const response = await fetch('/.netlify/functions/bookings-create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(bookingPayload),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Không thể ghi nhận đặt dịch vụ.');
+      }
+      remoteBooking = result.booking;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to sync booking with Supabase:', error);
+    }
+
+    const bookingId = remoteBooking?.id ?? createId('booking');
 
     updateUser(currentUser.id, (user) => ({
       ...user,
-      balance: user.balance - resolvedAmount,
+      balance: Math.max(user.balance - resolvedAmount, 0),
       transactions: [
         {
           id: bookingId,
@@ -1802,6 +2051,8 @@ const submitSupportMessage = ({ message }) => {
   const value = useMemo(
     () => ({
       currentUser,
+      supabaseUser,
+      authLoading,
       login,
       logout,
       register,
@@ -1828,6 +2079,8 @@ const submitSupportMessage = ({ message }) => {
     }),
     [
       currentUser,
+      supabaseUser,
+      authLoading,
       users,
       customers,
       tours,

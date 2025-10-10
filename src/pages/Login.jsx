@@ -57,7 +57,7 @@ function Login() {
     setError('');
     setIsSubmitting(true);
     try {
-      const user = login(form.phone, form.password);
+      const user = await login(form.phone, form.password);
       if (user.role === 'admin') {
         navigate('/admin');
       } else {

@@ -341,7 +341,7 @@ function Stay() {
     }
   };
 
-  const handleBookStay = (stay, rooms = 1) => {
+  const handleBookStay = async (stay, rooms = 1) => {
     if (!currentUser) {
       setStayBookingFeedback((prev) => ({
         ...prev,
@@ -376,7 +376,7 @@ function Stay() {
     }));
 
     try {
-      bookProduct({
+      await bookProduct({
         category: 'stay',
         productId: stay.id,
         amountOverride: totalAmount,

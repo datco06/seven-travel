@@ -32,7 +32,7 @@ const WHY_CHOOSE_REASONS = [
 const WHY_CHOOSE_ICONS = WHY_CHOOSE_REASONS.map((item) => item.icon);
 
 function CreateTour() {
-  const { currentUser, tours, bookProduct } = useAuth();
+  const { currentUser, tours } = useAuth();
   const { language } = useLanguage();
   const isAdmin = currentUser?.role === 'admin';
   const currencyFormatter = useMemo(
