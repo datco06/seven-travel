@@ -1,0 +1,86 @@
+.tour-detail-page {
+  max-width: 1100px;
+  margin: 90px auto 80px;
+  padding: 0 24px;
+}
+
+.tour-detail-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+
+.tour-detail-page__back,
+.tour-detail-page__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  border: 1px solid rgba(0, 119, 182, 0.25);
+  color: #0a3d62;
+  background-color: rgba(0, 119, 182, 0.08);
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.tour-detail-page__back:hover,
+.tour-detail-page__link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(10, 61, 98, 0.18);
+  background-color: rgba(0, 119, 182, 0.15);
+}
+
+.tour-detail-page__link {
+  border-color: rgba(46, 204, 113, 0.25);
+  background-color: rgba(46, 204, 113, 0.12);
+  color: #1e8449;
+}
+
+.tour-detail-page__link:hover {
+  box-shadow: 0 8px 20px rgba(30, 132, 73, 0.2);
+  background-color: rgba(46, 204, 113, 0.18);
+}
+
+.tour-detail-page--empty {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 120px auto;
+  gap: 32px;
+}
+
+.tour-detail-page__empty-card {
+  max-width: 520px;
+  padding: 36px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 30px 60px rgba(10, 25, 56, 0.12);
+}
+
+.tour-detail-page__actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .tour-detail-page {
+    margin-top: 70px;
+    padding: 0 16px;
+  }
+
+  .tour-detail-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tour-detail-page__back,
+  .tour-detail-page__link {
+    justify-content: center;
+  }
+}

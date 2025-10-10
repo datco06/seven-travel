@@ -1,0 +1,635 @@
+.banner {
+  text-align: center; /* Căn giữa hình ảnh */
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.banner img {
+  width: 100%; /* Đảm bảo hình ảnh chiếm toàn bộ chiều rộng */
+  height: 550px; /* Điều chỉnh tỷ lệ chiều cao của hình ảnh */
+  object-fit: cover; /* Đảm bảo hình ảnh không bị méo, nhưng sẽ cắt bớt phần ngoài nếu cần */
+  display: block;
+  margin: 0 auto;
+}
+.banner .content {
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  transform: translateY(-30%);
+  color: white;
+  max-width: 40%;
+  font-size: 18px;
+  line-height: 1.6;
+
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: -90px;
+}
+
+.banner .content h2 {
+  font-size: 32px;
+  margin-bottom: 15px;
+  margin-top: 40px;
+}
+
+.banner .content button {
+  margin-top: 30px;
+  padding: 10px 20px;
+  background-color: #4fc3f7;
+  color: white;
+  border: none;
+  border-radius: 8px; /* ✅ Bo tròn góc */
+  cursor: pointer;
+  font-weight: bold;
+  font-weight: bold;
+}
+.banner button:hover {
+  background-color: #0077b6;
+}
+.nhap {
+  display: float;
+}
+
+.search-form button {
+  padding: 12px 20px;
+  background-color: #0099ff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-form button:hover {
+  background-color: #0077cc;
+}
+/* lý do */
+.content2 {
+  background-color: #f1faff; /* nền xanh nhạt */
+  padding: 50px 20px;
+  border-top: 2px solid #0099ff; /* đường xanh phía trên */
+  text-align: center;
+  margin-top: 90px;
+  height: 250px;
+}
+.duoi {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f1faff;
+  padding: 50px 20px;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.lydo {
+  max-width: 250px;
+  margin-top: -20px;
+}
+
+.icon {
+  background-color: #3399ff;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px auto;
+}
+
+.icon i {
+  font-size: 30px;
+  color: white;
+}
+
+.lydo h3 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1d1d35;
+  margin-bottom: 10px;
+}
+
+.lydo p {
+  color: #7d8da1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.keduoi {
+  margin-top: 50px;
+  border-top: 2px solid #0099ff; /* đường xanh phía trên */
+}
+.phan2 {
+  margin-top: 70px;
+}
+.phan2 h1,
+p {
+  text-align: center;
+}
+.cacbuoc {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 50px 20px;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.cacbuoc img {
+  width: 100px;
+  height: 120px;
+}
+.phan3 {
+  display: flex;
+  margin-left: 50px;
+  padding: 80px 20px;
+}
+
+.trai {
+  max-width: 700px;
+  text-align: left;
+  color: #1d1d35;
+}
+
+.trai h2 {
+  color: #3399ff;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.trai h1 {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.trai p {
+  font-size: 16px;
+  color: #6c7288;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.trai .tich {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.trai .tich::before {
+  content: "✔";
+  color: #3399ff;
+  margin-right: 10px;
+  font-weight: bold;
+}
+.image-layout {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 50px 0;
+  margin-top: -2px;
+  margin-right: -350px;
+}
+
+.image-wrapper {
+  position: absolute;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s;
+}
+
+.image-wrapper img {
+  width: 100%;
+  display: block;
+}
+
+/* Position and styling for each image */
+.img1 {
+  width: 300px;
+  top: 30px;
+  left: 0;
+  transform: rotate(-5deg);
+}
+
+.img2 {
+  width: 320px;
+  top: 0;
+  left: 200px;
+  z-index: 2;
+  transform: rotate(2deg);
+}
+
+.img3 {
+  width: 250px;
+  top: 180px;
+  left: 150px;
+  transform: rotate(0deg);
+  z-index: 1;
+}
+.image-layout::before {
+  content: "";
+  background: url("map-airplane-bg.svg") no-repeat center;
+  background-size: contain;
+  position: absolute;
+  top: -50px;
+  left: -100px;
+  right: -100px;
+  bottom: -50px;
+  z-index: 0;
+  opacity: 0.1;
+}
+.tieude p,
+h1 {
+  text-align: center;
+}
+.phan4 {
+  margin-left: 60px;
+  margin-top: 40px;
+}
+.slide1 {
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: 300px;
+}
+.khach1 {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 10px auto;
+}
+.slide {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 40px;
+}
+.donghanh {
+  margin-top: 100px;
+}
+.anhdh {
+  width: 1200px;
+  display: block;
+  margin: auto;
+}
+.social-icons {
+  display: flex;
+  gap: 20px;
+}
+.social-icons a {
+  text-decoration: none;
+  color: #1c1e21;
+  font-size: 32px;
+  transition: color 0.3s;
+}
+.social-icons a:hover {
+  color: #007bff;
+}
+/* Add or modify these styles in your CSS file */
+
+footer {
+  background-color: #212529; /* Very dark grey, as seen in the image */
+  color: #ffffff; /* White text for overall footer */
+  padding-top: 30px; /* Padding at the top of the footer */
+  padding-bottom: 30px; /* Padding at the bottom of the footer */
+  /* margin-top: 100px; */ /* This was on .chan, consider if still needed or if footer padding is enough */
+}
+
+.chan {
+  display: flex;
+  gap: 40px; /* Adjust gap between columns as needed */
+  justify-content: space-around;
+  padding: 20px 5%; /* Inner padding for the content area */
+  flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
+  /* margin-top: 100px; */ /* Removed as footer now has padding, was potentially excessive */
+}
+
+.chan1,
+.chan2,
+.chan3,
+.chan4 {
+  line-height: 1.6; /* More standard line height */
+  /* margin-top: 60px; */ /* This was quite large, consider reducing or removing if .chan padding is sufficient */
+  margin-top: 20px;
+  flex: 1; /* Allow columns to grow */
+  min-width: 200px; /* Minimum width before wrapping */
+}
+
+.chan h3 {
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 20px; /* Space below column titles */
+  font-size: 16px; /* Adjust title size as preferred */
+}
+
+.chan ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chan ul li {
+  margin-bottom: 12px; /* Space between list items */
+  font-size: 14px;
+  color: #dddddd; /* Slightly dimmer white for list items */
+}
+
+/* Styling for links within footer lists */
+.chan ul li a {
+  color: #dddddd;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.chan ul li a:hover {
+  color: #007bff; /* Example hover color, or your site's accent color */
+  text-decoration: underline;
+}
+
+/* Specific styling for THÔNG TIN LIÊN HỆ icons */
+.chan1 ul li {
+  display: flex;
+  align-items: flex-start; /* Align items to the start, useful if text wraps */
+}
+
+.chan1 ul li i {
+  margin-right: 10px; /* Space between icon and text */
+  color: #ffffff; /* Icon color */
+  width: 18px; /* Fixed width for alignment */
+  text-align: center;
+  margin-top: 3px; /* Slight top margin to better align with text */
+}
+
+/* Styling for KẾT NỐI VỚI CHÚNG TÔI social icons */
+.chan4 .social-icons {
+  display: flex;
+  gap: 15px; /* Space between social icons */
+  margin-bottom: 25px; /* Space below social icons, before next title */
+}
+
+.chan4 .social-icons a i {
+  color: #ffffff; /* White icons */
+  font-size: 24px; /* Adjust icon size as preferred */
+  transition: color 0.3s ease;
+}
+
+.chan4 .social-icons a:hover i {
+  color: #007bff; /* Example hover color */
+}
+
+/* Styling for PHƯƠNG THỨC THANH TOÁN image */
+.chan4 .thanhtoan {
+  max-width: 250px; /* Adjust based on your image and desired size */
+  height: auto; /* Maintain aspect ratio */
+  margin-top: 10px;
+}
+
+/* Responsive adjustments (example) */
+@media (max-width: 768px) {
+  .chan {
+    flex-direction: column; /* Stack columns vertically */
+    align-items: center; /* Center columns */
+    text-align: center; /* Center text within columns */
+  }
+  .chan1 ul li {
+    justify-content: center; /* Center icon and text if column is centered */
+  }
+  .chan4 .social-icons {
+    justify-content: center; /* Center social icons */
+  }
+}
+.form-container {
+  max-width: 900px;
+  width: 100%;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  margin: 20px;
+  /* Sử dụng Grid Layout để sắp xếp thông minh hơn */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px 24px; /* Khoảng cách giữa các hàng và cột */
+  align-items: end; /* Căn các item xuống dưới */
+  margin-left: 280px;
+}
+
+.form-title {
+  grid-column: 1 / -1; /* Tiêu đề chiếm toàn bộ chiều rộng */
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #007bff;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 0; /* Bỏ margin-bottom vì đã có gap */
+}
+
+/* Nơi đến và Ngày đi chiếm nhiều không gian hơn */
+.destination-group {
+  grid-column: span 2;
+}
+.date-group {
+  grid-column: span 2;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+
+.form-label i {
+  margin-right: 10px; /* Khoảng cách giữa icon và chữ */
+  color: #007bff; /* Màu của icon */
+  font-size: 1.1em;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ced4da; /* Viền mảnh hơn */
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.form-button-wrapper {
+  grid-column: 1 / -1; /* Nút chiếm toàn bộ chiều rộng */
+  text-align: center;
+  margin-top: 16px;
+}
+
+.form-button {
+  background-color: #007bff; /* Màu xanh lá cây kêu gọi hành động */
+  color: white;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-button:hover {
+  background-color: #386cdc;
+  transform: translateY(-2px); /* Hiệu ứng nhấc lên khi hover */
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.card:hover img {
+  transform: scale(1.1);
+}
+
+.card-text {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+.card-subtext {
+  font-size: 15px;
+  font-weight: normal;
+}
+.tieude {
+  text-align: left;
+}
+.anhtren {
+  display: flex;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cột bằng nhau */
+  gap: 20px; /* khoảng cách giữa các card */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  text-align: center;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.card-text {
+  padding: 10px;
+  font-weight: bold;
+}
+
+.card-subtext {
+  font-size: 0.9em;
+  color: #2b2828;
+}
+.tieude1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.khachsan {
+  margin-top: 90px;
+}
+.word h2 {
+  margin-top: 50px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.anhdiem {
+  width: 1100px;
+  margin-left: 160px;
+  margin-top: 10px;
+}
+.uudiem h1 {
+  text-align: center;
+  margin-top: 70px;
+}
+.divider {
+  width: 70%;
+  height: 2px;
+  background-color: #ccc;
+  border: none;
+  margin: 40px auto 0 auto;
+}
+.doitac {
+  display: flex;
+  margin-top: 60px;
+  margin-left: 230px;
+}
+.doitac img {
+  width: 600px;
+  height: 300px;
+  margin-left: 80px;
+}
+.card {
+  /* ... các thuộc tính hiện có ... */
+  transition: transform 0.4s ease, box-shadow 0.4s ease; /* Thêm transition cho box-shadow */
+}
+
+.card:hover {
+  transform: scale(1.05); /* Giảm nhẹ độ phóng to để tinh tế hơn */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Tăng bóng đổ khi hover */
+}
