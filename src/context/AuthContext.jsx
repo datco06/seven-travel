@@ -32,7 +32,8 @@ function buildAuthEmail(identifier) {
     return trimmed;
   }
   const digits = sanitizePhoneNumber(trimmed);
-  const handle = digits || trimmed.replace(/\s+/g, '');
+  const base = digits || trimmed.replace(/\s+/g, '');
+  const handle = base ? `traveler${base}` : `traveler${Date.now()}`;
   return `${handle}@seven-travel.app`;
 }
 
@@ -1432,6 +1433,26 @@ export function AuthProvider({ children }) {
     return data.user ?? data.session?.user ?? null;
   };
 
+  const buildLocalProfile = (userId, { fullName, phoneNumber, role }) => ({
+    id: userId,
+    full_name: fullName ?? '',
+    phone_number: phoneNumber ?? '',
+    role: role ?? 'customer',
+    updated_at: new Date().toISOString(),
+  });
+
+  const parseJsonSafely = async (response) => {
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return null;
+    }
+    try {
+      return await response.json();
+    } catch (error) {
+      return null;
+    }
+  };
+
   const syncProfileThroughFunction = async ({ fullName, phoneNumber, role = 'customer' }) => {
     const {
       data: { session },
@@ -1440,6 +1461,9 @@ export function AuthProvider({ children }) {
     if (!token) {
       throw new Error('Không tìm thấy phiên Supabase.');
     }
+
+    const fallbackProfile = buildLocalProfile(session.user.id, { fullName, phoneNumber, role });
+
     const response = await fetch('/.netlify/functions/profile-sync', {
       method: 'POST',
       headers: {
@@ -1453,11 +1477,16 @@ export function AuthProvider({ children }) {
         role,
       }),
     });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Không thể đồng bộ hồ sơ người dùng.');
+
+    if (response.status === 404) {
+      return fallbackProfile;
     }
-    return result.profile;
+
+    const result = await parseJsonSafely(response);
+    if (!response.ok) {
+      throw new Error(result?.error || 'Không thể đồng bộ hồ sơ người dùng.');
+    }
+    return result?.profile ?? fallbackProfile;
   };
 
   const loginWithProvider = async (provider) => {
