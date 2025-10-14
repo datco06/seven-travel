@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 const NAV_ITEMS = [
   { to: '/', labels: { vi: 'Trang chủ', en: 'Home' }, end: true },
-  { to: '/tao-tour', labels: { vi: 'Tạo Tour', en: 'Create Tour' } },
+  { to: '/tao-tour', labels: { vi: 'Tour', en: 'Tours' } },
   { to: '/di-chuyen', labels: { vi: 'Di chuyển', en: 'Transport' } },
   { to: '/luu-tru', labels: { vi: 'Lưu trú', en: 'Stay' } },
 ];

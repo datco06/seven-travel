@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/home.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 
@@ -37,24 +38,28 @@ const CONTENT = {
           description:
             'Chúng tôi tận tâm thiết kế hành trình khó quên với sự quan tâm tỉ mỉ và đồng hành sát sao.',
           image: '/anh/doingu.png',
+          to: '/doi-ngu-nhiet-huyet',
         },
         {
           title: 'Chuyên gia bản địa',
           description:
             'Những người bản địa hiểu rõ từng ngóc ngách sẵn sàng chia sẻ nét đẹp chân thật nhất.',
           image: '/anh/bandia.png',
+          to: '/chuyen-gia-ban-dia',
         },
         {
           title: 'Dịch vụ cá nhân hoá',
           description:
             'Mọi lịch trình đều “may đo” theo sở thích riêng và được hỗ trợ 24/7.',
           image: '/anh/dichvu.png',
+          to: '/dich-vu-ca-nhan-hoa',
         },
         {
           title: 'Hướng tới bền vững',
           description:
             'Chúng tôi kết nối du khách với cộng đồng bằng những trải nghiệm thân thiện môi trường.',
           image: '/anh/moitruong.png',
+          to: '/du-lich-ben-vung',
         },
       ],
     },
@@ -101,12 +106,12 @@ const CONTENT = {
     },
     destinations: {
       cards: [
-        { title: 'Hà Nội', image: '/anh/home/hanoi.jpg' },
-        { title: 'Hải Phòng', image: '/anh/home/haiphong.jpg' },
-        { title: 'Ninh Bình', image: '/anh/home/ninhbinh.jpg' },
-        { title: 'Sơn La', image: '/anh/home/sonla.jpg' },
-        { title: 'Lào Cai', image: '/anh/home/laocai.webp' },
-        { title: 'Phú Thọ', image: '/anh/home/phutho.jpg' },
+        { title: 'Hà Nội', image: '/anh/home/hanoi.jpg', to: '/tour-ha-noi' },
+        { title: 'Hải Phòng', image: '/anh/home/haiphong.jpg', to: '/tour-hai-phong' },
+        { title: 'Ninh Bình', image: '/anh/home/ninhbinh.jpg', to: '/tour-ninh-binh' },
+        { title: 'Sơn La', image: '/anh/home/sonla.jpg', to: '/tour-son-la' },
+        { title: 'Lào Cai', image: '/anh/home/laocai.webp', to: '/tour-lao-cai' },
+        { title: 'Phú Thọ', image: '/anh/home/phutho.jpg', to: '/tour-phu-tho' },
       ],
       title: 'Địa Điểm Bạn Muốn Đến',
       description: 'Khám phá các điểm đến nổi bật ở miền Bắc Việt Nam được SEVEN TRAVEL tuyển chọn.',
@@ -117,21 +122,25 @@ const CONTENT = {
           title: 'Thăm bảo tàng tư nhân đầu tiên Việt Nam',
           description: 'Lắng nghe câu chuyện văn hoá từ những người canh giữ ký ức.',
           image: '/anh/home/baotangdautien.jpeg',
+          to: '/tham-bao-tang-tu-nhan',
         },
         {
           title: 'Trải nghiệm ẩm thực cùng bếp trưởng',
           description: 'Học nấu món địa phương và khám phá chợ bản địa đầy sắc màu.',
           image: '/anh/home/amthuc.jpg',
+          to: '/trai-nghiem-am-thuc',
         },
         {
           title: 'Nghệ thuật múa rối nước',
           description: 'Đắm mình trong nghệ thuật truyền thống cùng nghệ nhân lâu năm.',
           image: '/anh/home/muaroi.jpg',
+          to: '/nghe-thuat-mua-roi-nuoc',
         },
         {
           title: 'Tour ẩm thực đường phố',
           description: 'Dạo bước qua các con phố nhộn nhịp và thưởng thức hương vị chân thật.',
           image: '/anh/home/amthucduongpho.jpg',
+          to: '/tour-am-thuc-duong-pho',
         },
       ],
     },
@@ -169,21 +178,25 @@ const CONTENT = {
           title: 'Passionate team',
           description: 'We design unforgettable journeys with meticulous care and heartfelt dedication.',
           image: '/anh/image%20copy%203.png',
+          to: '/doi-ngu-nhiet-huyet',
         },
         {
           title: 'Local experts',
           description: 'Insiders who know every corner of the region and love to share its authentic beauty.',
           image: '/anh/image%20copy%2010.png',
+          to: '/chuyen-gia-ban-dia',
         },
         {
           title: 'Personalised service',
           description: 'Every itinerary is tailored to your tastes with 24/7 support.',
           image: '/anh/image%20copy%2014.png',
+          to: '/dich-vu-ca-nhan-hoa',
         },
         {
           title: 'Sustainable approach',
           description: 'We connect travellers with communities through environmentally friendly experiences.',
           image: '/anh/image%20copy%2016.png',
+          to: '/du-lich-ben-vung',
         },
       ],
     },
@@ -230,12 +243,12 @@ const CONTENT = {
     },
     destinations: {
       cards: [
-        { title: 'Ha Noi', image: '/anh/image%20copy%2031.png' },
-        { title: 'Hai Phong', image: '/anh/image%20copy%2030.png' },
-        { title: 'Ninh Binh', image: '/anh/image%20copy%2027.png' },
-        { title: 'Son La', image: '/anh/image%20copy%2034.png' },
-        { title: 'Lao Cai', image: '/anh/image%20copy%2035.png' },
-        { title: 'Phu Tho', image: '/anh/image%20copy%2019.png' },
+        { title: 'Ha Noi', image: '/anh/image%20copy%2031.png', to: '/tour-ha-noi' },
+        { title: 'Hai Phong', image: '/anh/image%20copy%2030.png', to: '/tour-hai-phong' },
+        { title: 'Ninh Binh', image: '/anh/image%20copy%2027.png', to: '/tour-ninh-binh' },
+        { title: 'Son La', image: '/anh/image%20copy%2034.png', to: '/tour-son-la' },
+        { title: 'Lao Cai', image: '/anh/image%20copy%2035.png', to: '/tour-lao-cai' },
+        { title: 'Phu Tho', image: '/anh/image%20copy%2019.png', to: '/tour-phu-tho' },
       ],
       title: 'Destinations You Desire',
       description: 'Explore Northern Vietnam highlights curated by Travel Tour specialists.',
@@ -246,21 +259,25 @@ const CONTENT = {
           title: "Visit Vietnam's First Private Museum",
           description: 'Hear captivating stories and discover cultural heritage with passionate curators.',
           image: '/anh/image%20copy%205.png',
+          to: '/tham-bao-tang-tu-nhan',
         },
         {
           title: 'Culinary Experience With Master Chef',
           description: 'Learn local recipes and explore vibrant markets with a local chef.',
           image: '/anh/image%20copy%2013.png',
+          to: '/trai-nghiem-am-thuc',
         },
         {
           title: 'The Art of Water Puppetry',
           description: 'Immerse yourself in a century-old art form with seasoned artisans.',
           image: '/anh/image%20copy%204.png',
+          to: '/nghe-thuat-mua-roi-nuoc',
         },
         {
           title: 'Street Food Tour',
           description: 'Stroll lively streets and savour authentic flavours.',
           image: '/anh/image.png',
+          to: '/tour-am-thuc-duong-pho',
         },
       ],
     },
@@ -352,13 +369,17 @@ function Home() {
           </a>
         </div>
         <div className="personalize-grid">
-          {copy.personalize.features.map((item) => (
-            <article className="personalize-card" key={item.title}>
+          {copy.personalize.features.map((item) => {
+            const CardTag = item.to ? Link : 'article';
+            const cardProps = item.to ? { to: item.to } : {};
+            return (
+              <CardTag className={`personalize-card${item.to ? ' personalize-card--link' : ''}`} key={item.title} {...cardProps}>
               <img src={item.image} alt={item.title} />
               <h5>{item.title}</h5>
               <p>{item.description}</p>
-            </article>
-          ))}
+              </CardTag>
+            );
+          })}
         </div>
       </section>
 
@@ -426,12 +447,19 @@ function Home() {
 
       <section className="destination-gallery">
         <div className="destination-grid">
-          {copy.destinations.cards.map((item) => (
-            <div className="destination-card" key={item.title}>
-              <img src={item.image} alt={item.title} />
-              <span>{item.title}</span>
-            </div>
-          ))}
+          {copy.destinations.cards.map((item) =>
+            item.to ? (
+              <Link to={item.to} className="destination-card" key={item.title}>
+                <img src={item.image} alt={item.title} />
+                <span>{item.title}</span>
+              </Link>
+            ) : (
+              <div className="destination-card" key={item.title}>
+                <img src={item.image} alt={item.title} />
+                <span>{item.title}</span>
+              </div>
+            )
+          )}
         </div>
         <div className="section-header">
           <h4>{copy.destinations.title}</h4>
@@ -441,15 +469,19 @@ function Home() {
 
       <section className="exclusive-experiences">
         <div className="experience-grid">
-          {copy.experiences.cards.map((item) => (
-            <article className="experience-card" key={item.title}>
+          {copy.experiences.cards.map((item) => {
+            const CardTag = item.to ? Link : 'article';
+            const cardProps = item.to ? { to: item.to } : {};
+            return (
+              <CardTag className={`experience-card${item.to ? ' experience-card--link' : ''}`} key={item.title} {...cardProps}>
               <img src={item.image} alt={item.title} />
               <div className="experience-body">
                 <h5>{item.title}</h5>
                 <p>{item.description}</p>
               </div>
-            </article>
-          ))}
+              </CardTag>
+            );
+          })}
         </div>
       </section>
     </div>

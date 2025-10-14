@@ -292,6 +292,18 @@ footer ul li {
   margin-bottom: 8px;
 }
 
+footer .footer-link {
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+footer .footer-link:hover {
+  color: #4fc3f7;
+}
+
 footer .chan {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -306,6 +318,101 @@ footer .social-icons {
 
 footer .thanhtoan {
   max-width: 200px;
+}
+
+.info-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 140px 20px 80px;
+  display: grid;
+  gap: 40px;
+}
+
+.info-page__header {
+  text-align: center;
+  display: grid;
+  gap: 12px;
+}
+
+.info-page__header p {
+  color: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(135deg, #1c61ad, #4fc3f7);
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 500;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.info-page__content {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+  padding: 40px;
+  display: grid;
+  gap: 32px;
+}
+
+.info-page__section {
+  display: grid;
+  gap: 16px;
+}
+
+.info-page__section h2 {
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.info-page__section p {
+  color: #475569;
+  font-size: 16px;
+}
+
+.info-page__list {
+  display: grid;
+  gap: 12px;
+  padding-left: 20px;
+}
+
+.info-page__list li {
+  position: relative;
+  color: #475569;
+  font-size: 16px;
+}
+
+.info-page__list li::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1c61ad, #4fc3f7);
+}
+
+.info-page__highlight {
+  background: linear-gradient(135deg, rgba(28, 97, 173, 0.08), rgba(79, 195, 247, 0.12));
+  padding: 28px;
+  border-radius: 18px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(28, 97, 173, 0.16);
+}
+
+.info-page__highlight strong {
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.info-link {
+  color: #1c61ad;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.info-link:hover {
+  color: #0f172a;
 }
 
 @media (max-width: 1024px) {

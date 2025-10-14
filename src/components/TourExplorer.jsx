@@ -78,6 +78,95 @@ const currencyFormatter = new Intl.NumberFormat('vi-VN', {
 
 export const FIXED_DESTINATIONS = ['Hà Nội', 'Hải Phòng', 'Ninh Bình', 'Sơn La', 'Lào Cai', 'Phú Thọ'];
 
+const DAY_PATTERNS = [/(\d+)\s*ngày/i, /(\d+)\s*day/i];
+const NIGHT_PATTERNS = [/(\d+)\s*đêm/i, /(\d+)\s*night/i];
+
+const slugifyText = (input) =>
+  input
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const readFirstMatch = (patterns, text) => {
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const numeric = Number.parseInt(match[1], 10);
+      if (Number.isFinite(numeric)) {
+        return numeric;
+      }
+    }
+  }
+  return null;
+};
+
+const extractDurationMeta = (tour) => {
+  const fallbackLabel = (tour.durationLabel || tour.duration || '').trim();
+  let days = Number.isFinite(tour.durationDays) ? tour.durationDays : null;
+  let nights = Number.isFinite(tour.durationNights) ? tour.durationNights : null;
+
+  if (fallbackLabel) {
+    if (!Number.isFinite(days)) {
+      const parsedDays = readFirstMatch(DAY_PATTERNS, fallbackLabel);
+      if (Number.isFinite(parsedDays)) {
+        days = parsedDays;
+      }
+    }
+    if (!Number.isFinite(nights)) {
+      const parsedNights = readFirstMatch(NIGHT_PATTERNS, fallbackLabel);
+      if (Number.isFinite(parsedNights)) {
+        nights = parsedNights;
+      }
+    }
+  }
+
+  return { days, nights, fallbackLabel };
+};
+
+const normaliseNights = ({ days, nights }) => {
+  if (Number.isFinite(nights)) return nights;
+  if (Number.isFinite(days)) {
+    if (days <= 1) return 0;
+    return days - 1;
+  }
+  return null;
+};
+
+const durationValueFromMeta = (meta) => {
+  if (Number.isFinite(meta.days)) {
+    const normalisedNights = normaliseNights(meta);
+    const safeNights = Number.isFinite(normalisedNights) ? normalisedNights : 0;
+    return `standard:${meta.days}-${safeNights}`;
+  }
+  const base = meta.fallbackLabel ? slugifyText(meta.fallbackLabel) : '';
+  return base ? `text:${base}` : null;
+};
+
+const durationValueFromTour = (tour) => durationValueFromMeta(extractDurationMeta(tour));
+
+const durationLabelFromMeta = (meta, language) => {
+  if (Number.isFinite(meta.days)) {
+    const nights = normaliseNights(meta);
+    if (language === 'en') {
+      const dayLabel = meta.days === 1 ? 'day' : 'days';
+      if (Number.isFinite(nights) && nights > 0) {
+        const nightLabel = nights === 1 ? 'night' : 'nights';
+        return `${meta.days} ${dayLabel} ${nights} ${nightLabel}`;
+      }
+      return `${meta.days} ${dayLabel}`;
+    }
+
+    if (Number.isFinite(nights) && nights > 0) {
+      return `${meta.days} ngày ${nights} đêm`;
+    }
+    return `${meta.days} ngày`;
+  }
+
+  return meta.fallbackLabel || '';
+};
+
 function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
   const { language } = useLanguage();
   const copy = TOUR_EXPLORER_COPY[language];
@@ -89,39 +178,50 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
   const [bookingFeedback, setBookingFeedback] = useState({});
   const [guestSelections, setGuestSelections] = useState({});
 
-  const shortTours = useMemo(() => {
+  const explorerTours = useMemo(() => {
     const allowed = new Set(FIXED_DESTINATIONS.map((item) => item.toLowerCase()));
-    const getDays = (tour) => {
-      if (Number.isFinite(tour.durationDays)) return tour.durationDays;
-      const source = tour.durationLabel || tour.duration || '';
-      const match = source.match(/(\d+)\s*ngày/i);
-      return match ? Number.parseInt(match[1], 10) : Number.NaN;
-    };
+    const normalise = (text) => text?.toLowerCase?.() ?? '';
     return tours.filter((tour) => {
-      const days = getDays(tour);
-      const regions = (tour.regions ?? []).map((region) => region.toLowerCase());
-      const covered = regions.length === 0 ? true : regions.every((region) => allowed.has(region));
-      return covered && Number.isFinite(days) && days <= 4;
+      if (tour.hiddenFromExplorer) return false;
+      const regions = (tour.regions ?? []).map((region) => normalise(region));
+      if (regions.length === 0) {
+        return true;
+      }
+      return regions.some((region) => allowed.has(region));
     });
   }, [tours]);
 
   const destinationOptions = useMemo(() => FIXED_DESTINATIONS, []);
 
   const durationOptions = useMemo(() => {
-    const unique = new Map();
-    shortTours.forEach((tour) => {
-      const label = tour.durationLabel || tour.duration;
-      if (!label) return;
-      const days = Number.parseInt(tour.durationDays, 10) || Number.parseInt(label, 10) || 0;
-      if (!unique.has(label)) {
-        unique.set(label, { label, days });
+    const options = new Map();
+
+    explorerTours.forEach((tour) => {
+      const meta = extractDurationMeta(tour);
+      const value = durationValueFromMeta(meta);
+      if (!value) return;
+
+      if (!options.has(value)) {
+        const normalisedNights = normaliseNights(meta);
+        options.set(value, {
+          value,
+          label: durationLabelFromMeta(meta, language),
+          days: Number.isFinite(meta.days) ? meta.days : Number.POSITIVE_INFINITY,
+          nights: Number.isFinite(normalisedNights) ? normalisedNights : Number.POSITIVE_INFINITY,
+        });
       }
     });
-    return Array.from(unique.values()).sort((a, b) => {
-      if (a.days === b.days) return a.label.localeCompare(b.label);
+
+    return Array.from(options.values()).sort((a, b) => {
+      if (a.days === b.days) {
+        if (a.nights === b.nights) {
+          return a.label.localeCompare(b.label);
+        }
+        return a.nights - b.nights;
+      }
       return a.days - b.days;
     });
-  }, [shortTours]);
+  }, [explorerTours, language]);
 
   const handleFieldChange = (event) => {
     const { name, value } = event.target;
@@ -131,15 +231,15 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
   const handleSearch = (event) => {
     event.preventDefault();
     const normalizedDestination = filters.destination.trim().toLowerCase();
-    const filteredTours = shortTours.filter((tour) => {
+    const filteredTours = explorerTours.filter((tour) => {
       const tourRegions = (tour.regions ?? []).map((region) => region.toLowerCase());
       const matchesDestination = normalizedDestination
         ? tourRegions.some((region) => region.includes(normalizedDestination)) ||
           tour.name.toLowerCase().includes(normalizedDestination) ||
           (tour.summary ?? '').toLowerCase().includes(normalizedDestination)
         : true;
-      const tourDuration = tour.durationLabel || tour.duration || '';
-      const matchesDuration = filters.duration ? tourDuration === filters.duration : true;
+      const tourDurationValue = durationValueFromTour(tour);
+      const matchesDuration = filters.duration ? tourDurationValue === filters.duration : true;
       return matchesDestination && matchesDuration;
     });
 
@@ -301,7 +401,7 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
           >
             <option value="">{copy.durationPlaceholder}</option>
             {durationOptions.map((option) => (
-              <option key={option.label} value={option.label}>
+              <option key={option.value} value={option.value}>
                 {option.label}
               </option>
             ))}

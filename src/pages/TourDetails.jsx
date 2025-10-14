@@ -176,7 +176,17 @@ function TourDetails() {
                   <div className="tour-day__badge">Ngày {item.day ?? index + 1}</div>
                   <div className="tour-day__body">
                     <h5>{item.title}</h5>
-                    <p>{item.description}</p>
+                    {item.description ? <p>{item.description}</p> : null}
+                    {item.schedule?.length ? (
+                      <ul className="tour-day__schedule">
+                        {item.schedule.map((entry) => (
+                          <li key={entry}>
+                            <i className="fa-solid fa-circle-dot" aria-hidden="true" />
+                            <span>{entry}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                     {item.image ? <img src={item.image} alt={item.title} /> : null}
                   </div>
                 </article>

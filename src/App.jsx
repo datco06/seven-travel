@@ -14,6 +14,23 @@ import { LanguageProvider } from './context/LanguageContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import TourDetails from './pages/TourDetails.jsx';
 import AdminLayout from './components/AdminLayout.jsx';
+import FAQ from './pages/FAQ.jsx';
+import Terms from './pages/Terms.jsx';
+import OperatingRules from './pages/OperatingRules.jsx';
+import HanoiTours from './pages/HanoiTours.jsx';
+import HaiPhongTours from './pages/HaiPhongTours.jsx';
+import NinhBinhTours from './pages/NinhBinhTours.jsx';
+import SonLaTours from './pages/SonLaTours.jsx';
+import LaoCaiTours from './pages/LaoCaiTours.jsx';
+import PhuThoTours from './pages/PhuThoTours.jsx';
+import LocalExperts from './pages/LocalExperts.jsx';
+import CulinaryExperience from './pages/CulinaryExperience.jsx';
+import MuseumExperience from './pages/MuseumExperience.jsx';
+import WaterPuppetryExperience from './pages/WaterPuppetryExperience.jsx';
+import StreetFoodExperience from './pages/StreetFoodExperience.jsx';
+import PassionateTeam from './pages/PassionateTeam.jsx';
+import PersonalizedService from './pages/PersonalizedService.jsx';
+import SustainableTravel from './pages/SustainableTravel.jsx';
 
 function App() {
   return (
@@ -26,10 +43,27 @@ function App() {
               <Route path="tao-tour" element={<CreateTour />} />
               <Route path="di-chuyen" element={<Transport />} />
               <Route path="luu-tru" element={<Stay />} />
+              <Route path="tour-ha-noi" element={<HanoiTours />} />
+              <Route path="tour-hai-phong" element={<HaiPhongTours />} />
+              <Route path="tour-ninh-binh" element={<NinhBinhTours />} />
+              <Route path="tour-son-la" element={<SonLaTours />} />
+              <Route path="tour-lao-cai" element={<LaoCaiTours />} />
+              <Route path="tour-phu-tho" element={<PhuThoTours />} />
+              <Route path="chuyen-gia-ban-dia" element={<LocalExperts />} />
+              <Route path="trai-nghiem-am-thuc" element={<CulinaryExperience />} />
+              <Route path="tham-bao-tang-tu-nhan" element={<MuseumExperience />} />
+              <Route path="nghe-thuat-mua-roi-nuoc" element={<WaterPuppetryExperience />} />
+              <Route path="tour-am-thuc-duong-pho" element={<StreetFoodExperience />} />
+              <Route path="doi-ngu-nhiet-huyet" element={<PassionateTeam />} />
+              <Route path="dich-vu-ca-nhan-hoa" element={<PersonalizedService />} />
+              <Route path="du-lich-ben-vung" element={<SustainableTravel />} />
               <Route path="dang-nhap" element={<Login />} />
               <Route path="dang-ky" element={<Register />} />
               <Route path="tai-khoan" element={<CustomerAccount />} />
               <Route path="tours/:slug" element={<TourDetails />} />
+              <Route path="cau-hoi-thuong-gap" element={<FAQ />} />
+              <Route path="dieu-khoan-dieu-kien" element={<Terms />} />
+              <Route path="quy-che-hoat-dong" element={<OperatingRules />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
 

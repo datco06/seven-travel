@@ -542,6 +542,31 @@
   margin-bottom: 12px;
 }
 
+.tour-day__schedule {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.tour-day__schedule li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.tour-day__schedule li i {
+  color: #0f9f5f;
+  margin-top: 4px;
+}
+
+.tour-day__schedule li span {
+  flex: 1;
+}
+
 .tour-day__body img {
   width: 100%;
   border-radius: 14px;
