@@ -89,11 +89,7 @@ function Footer() {
             </a>
           </div>
           <h3>PHƯƠNG THỨC THANH TOÁN</h3>
-          <img
-            src="/anh/Ảnh màn hình 2025-05-16 lúc 14.55.25.png"
-            className="thanhtoan"
-            alt="Phương thức thanh toán"
-          />
+          <img src="/anh/image copy 29.png" className="thanhtoan" alt="Phương thức thanh toán" />
         </div>
       </div>
     </footer>

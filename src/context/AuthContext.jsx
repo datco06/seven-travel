@@ -1860,7 +1860,7 @@ export function AuthProvider({ children }) {
         });
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Failed to hydrate Supabase profile', error);
+        console.warn('Failed to hydrate Supabase profile', error);
       }
     })();
 
@@ -1909,6 +1909,11 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const shouldSkipProfileSync =
+    typeof window !== 'undefined' &&
+    ['localhost', '127.0.0.1'].includes(window.location.hostname) &&
+    import.meta.env.VITE_ENABLE_PROFILE_SYNC !== 'true';
+
   const syncProfileThroughFunction = async ({ fullName, phoneNumber, role = 'customer' }) => {
     const {
       data: { session },
@@ -1920,42 +1925,41 @@ export function AuthProvider({ children }) {
 
     const fallbackProfile = buildLocalProfile(session.user.id, { fullName, phoneNumber, role });
 
-    const response = await fetch('/.netlify/functions/profile-sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        id: session.user.id,
-        full_name: fullName,
-        phone_number: phoneNumber,
-        role,
-      }),
-    });
-
-    if (response.status === 404) {
+    if (shouldSkipProfileSync) {
       return fallbackProfile;
     }
 
-    const result = await parseJsonSafely(response);
-    if (!response.ok) {
-      throw new Error(result?.error || 'Không thể đồng bộ hồ sơ người dùng.');
-    }
-    return result?.profile ?? fallbackProfile;
-  };
+    try {
+      const response = await fetch('/.netlify/functions/profile-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: session.user.id,
+          full_name: fullName,
+          phone_number: phoneNumber,
+          role,
+        }),
+      });
 
-  const loginWithProvider = async (provider) => {
-    const redirectTo = typeof window !== 'undefined' ? window.location.origin : undefined;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo,
-        scopes: 'email profile',
-      },
-    });
-    if (error) {
-      throw new Error(error.message);
+      if (response.status === 404) {
+        return fallbackProfile;
+      }
+
+      const result = await parseJsonSafely(response);
+      if (!response.ok) {
+        console.warn('Không thể đồng bộ hồ sơ người dùng.', {
+          status: response.status,
+          error: result?.error,
+        });
+        return fallbackProfile;
+      }
+      return result?.profile ?? fallbackProfile;
+    } catch (error) {
+      console.warn('Gặp lỗi khi gọi hàm profile-sync, dùng dữ liệu dự phòng.', error);
+      return fallbackProfile;
     }
   };
 
@@ -2613,7 +2617,6 @@ const submitSupportMessage = ({ message }) => {
       supabaseUser,
       authLoading,
       login,
-      loginWithProvider,
       logout,
       register,
       requestTopUp,
@@ -2641,7 +2644,6 @@ const submitSupportMessage = ({ message }) => {
       currentUser,
       supabaseUser,
       authLoading,
-      loginWithProvider,
       users,
       customers,
       tours,

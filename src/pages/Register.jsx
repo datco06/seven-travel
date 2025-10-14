@@ -17,9 +17,6 @@ const COPY = {
     loginLink: 'Đăng nhập',
     sideTitle: 'Gia nhập cộng đồng khám phá',
     sideSubtitle: 'Nhận ưu đãi độc quyền, quản lý ví điện tử và đặt tour chỉ với vài thao tác.',
-    socialTitle: 'Hoặc đăng ký nhanh với',
-    google: 'Google',
-    facebook: 'Facebook',
   },
   en: {
     title: 'Create your SEVEN TRAVEL account',
@@ -33,15 +30,12 @@ const COPY = {
     loginLink: 'Sign in',
     sideTitle: 'Join our explorers community',
     sideSubtitle: 'Unlock curated offers, manage your travel wallet, and reserve experiences in a few taps.',
-    socialTitle: 'Or sign up instantly with',
-    google: 'Google',
-    facebook: 'Facebook',
   },
 };
 
 function Register() {
   const navigate = useNavigate();
-  const { register, loginWithProvider } = useAuth();
+  const { register } = useAuth();
   const { language } = useLanguage();
   const copy = COPY[language];
   const [form, setForm] = useState({ name: '', phone: '', password: '', confirmPassword: '' });
@@ -123,43 +117,6 @@ function Register() {
             {isSubmitting ? 'Loading…' : copy.submit}
           </button>
         </form>
-        <div className="social-auth">
-          <p>{copy.socialTitle}</p>
-          <div className="social-auth__buttons">
-            <button
-              type="button"
-              className="social-btn google"
-              onClick={async () => {
-                setError('');
-                setIsSubmitting(true);
-                try {
-                  await loginWithProvider('google');
-                } catch (err) {
-                  setError(err.message);
-                  setIsSubmitting(false);
-                }
-              }}
-            >
-              <i className="fab fa-google" /> {copy.google}
-            </button>
-            <button
-              type="button"
-              className="social-btn facebook"
-              onClick={async () => {
-                setError('');
-                setIsSubmitting(true);
-                try {
-                  await loginWithProvider('facebook');
-                } catch (err) {
-                  setError(err.message);
-                  setIsSubmitting(false);
-                }
-              }}
-            >
-              <i className="fab fa-facebook-f" /> {copy.facebook}
-            </button>
-          </div>
-        </div>
         <p className="auth-switch">
           {copy.loginQuestion}{' '}
           <Link to="/dang-nhap">{copy.loginLink}</Link>
