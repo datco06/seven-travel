@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/stay.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -6,7 +7,7 @@ import { BOOKING_MESSAGES, mapBookingErrorMessage } from '../constants/bookingMe
 import { FIXED_DESTINATIONS } from '../components/TourExplorer.jsx';
 import { STAY_CATALOG } from '../data/stayCatalog.js';
 
-const CONTENT = {
+export const STAY_CONTENT = {
   vi: {
     hero: {
       title: 'Lưu trú tinh tế cho mọi phong cách du lịch',
@@ -40,25 +41,34 @@ const CONTENT = {
       title: 'Bộ sưu tập được tuyển chọn',
       cards: [
         {
+          slug: 'local-homestay-collection',
           title: 'Homestay bản địa ấm áp',
           description:
             'Sống cùng gia đình địa phương, học nấu ăn truyền thống và nghe những câu chuyện bản địa chân thực.',
           image: '/anh/luutru/homestay-ban-ia-am-ap-1.jpg',
           tag: 'Trải nghiệm văn hoá',
+          detail:
+            'Chúng tôi kết nối bạn với những gia đình hiếu khách ở các bản làng Sapa, Mộc Châu hay Lào Cai. Lịch trình bao gồm lớp nấu ăn truyền thống, tham quan nương chè và hoạt động thủ công đậm bản sắc.',
         },
         {
+          slug: 'boutique-hotel-collection',
           title: 'Khách sạn boutique đô thị',
           description:
             'Không gian nghệ thuật giữa trung tâm thành phố, thiết kế sáng tạo cùng tiện nghi hiện đại.',
           image: '/anh/luutru/khach-san-boutique-o-thi-1.jpg',
           tag: 'Chạm vào nghệ thuật',
+          detail:
+            'Lựa chọn boutique hotel tại Hà Nội, Hải Phòng hay Hội An với phòng thiết kế độc bản, rooftop bar và dịch vụ concierge linh hoạt. Hoàn hảo cho chuyến đi ngắn ngày nhưng giàu trải nghiệm.',
         },
         {
+          slug: 'private-resort-collection',
           title: 'Resort nghỉ dưỡng riêng tư',
           description:
             'Biệt thự biển với hồ bơi riêng, liệu trình spa chuyên sâu và dịch vụ quản gia 24/7.',
           image: '/anh/luutru/resort-nghi-duong-rieng-tu-1.jpg',
           tag: 'Thư giãn tuyệt đối',
+          detail:
+            'Các resort cao cấp tại Phú Quốc, Ninh Bình hay Sơn La với villa hồ bơi riêng, liệu trình wellness và hoạt động dành riêng cho gia đình hoặc cặp đôi. Đội concierge túc trực để cá nhân hoá mọi chi tiết.',
         },
       ],
     },
@@ -152,25 +162,34 @@ const CONTENT = {
       title: 'Handpicked collections',
       cards: [
         {
+          slug: 'local-homestay-collection',
           title: 'Immersive local homestays',
           description:
             'Stay with welcoming families, join their kitchen, and hear heartfelt stories passed down through generations.',
           image: '/anh/luutru/homestay-ban-ia-am-ap-1.jpg',
           tag: 'Culture-first',
+          detail:
+            'We pair you with warm-hearted hosts across Sa Pa, Moc Chau, and Lao Cai. Expect hands-on cooking classes, tea field walks, and craft workshops that honour local heritage.',
         },
         {
+          slug: 'boutique-hotel-collection',
           title: 'Artful boutique hotels',
           description:
             'Creative spaces in the heart of the city blending contemporary design, gastronomy, and bespoke service.',
           image: '/anh/luutru/khach-san-boutique-o-thi-1.jpg',
           tag: 'City energy',
+          detail:
+            'Boutique stays in Hanoi, Hai Phong, or Hoi An featuring one-of-a-kind suites, rooftop lounges, and concierge teams ready to secure galleries, dining, and nightlife experiences.',
         },
         {
+          slug: 'private-resort-collection',
           title: 'Private luxury resorts',
           description:
             'Oceanfront villas with private pools, holistic spa journeys, and butler service around the clock.',
           image: '/anh/luutru/resort-nghi-duong-rieng-tu-1.jpg',
           tag: 'Slow luxury',
+          detail:
+            'Exclusive resorts in Phu Quoc, Ninh Binh, and Son La with secluded villas, restorative wellness rituals, and curated activities for couples or families. Butler service personalises every moment.',
         },
       ],
     },
@@ -236,7 +255,7 @@ const CONTENT = {
 function Stay() {
   const { language } = useLanguage();
   const { currentUser, bookProduct } = useAuth();
-  const copy = CONTENT[language];
+  const copy = STAY_CONTENT[language];
   const stays = useMemo(() => STAY_CATALOG, []);
   const currencyFormatter = useMemo(
     () =>
@@ -643,18 +662,18 @@ function Stay() {
               : 'Every property is personally inspected by SEVEN TRAVEL to guarantee hygiene, service standards, and the ambience you envision.'}
           </p>
         </div>
-        <div className="collection-grid">
+        <div className="stay-collections__grid">
           {copy.collections.cards.map((card) => (
-            <article key={card.title} className="collection-card">
-              <div className="collection-image">
-                <span className="collection-tag">{card.tag}</span>
-                <img src={card.image} alt={card.title} />
+            <Link key={card.slug} to={`/luu-tru/${card.slug}`} className="stay-collection-card">
+              <div className="stay-collection-card__media">
+                <img src={card.image} alt={card.title} loading="lazy" />
+                {card.tag ? <span className="stay-collection-card__tag">{card.tag}</span> : null}
               </div>
-              <div className="collection-body">
+              <div className="stay-collection-card__content">
                 <h3>{card.title}</h3>
                 <p>{card.description}</p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>

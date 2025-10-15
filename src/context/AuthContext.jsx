@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { STAY_CATALOG } from '../data/stayCatalog.js';
 import { supabase } from '../lib/supabaseClient.js';
+import { useLanguage } from './LanguageContext.jsx';
+import { TOUR_TRANSLATIONS } from '../data/tourTranslations.js';
 
 const AuthContext = createContext(null);
 
@@ -1667,6 +1669,79 @@ const INITIAL_TRANSPORT = [
   },
 ];
 
+function applyTourTranslations(tour, language) {
+  if (language === 'vi') {
+    return tour;
+  }
+
+  const translations = TOUR_TRANSLATIONS[tour.id]?.[language];
+  if (!translations) {
+    return tour;
+  }
+
+  const localized = { ...tour };
+
+  if (translations.name) localized.name = translations.name;
+  if (translations.summary) localized.summary = translations.summary;
+  if (translations.description) localized.description = translations.description;
+  if (translations.duration) localized.duration = translations.duration;
+  if (translations.durationLabel) localized.durationLabel = translations.durationLabel;
+  if (translations.regions) localized.regions = [...translations.regions];
+  if (translations.heroImage) localized.heroImage = translations.heroImage;
+
+  if (translations.pricing && tour.pricing) {
+    localized.pricing = { ...tour.pricing, ...translations.pricing };
+  }
+
+  if (Array.isArray(tour.includes)) {
+    const translatedIncludes = translations.includes ?? [];
+    localized.includes = tour.includes.map((item, index) => ({
+      ...item,
+      label: translatedIncludes[index] ?? item.label,
+    }));
+  }
+
+  if (Array.isArray(tour.itinerary)) {
+    const translatedItinerary = translations.itinerary ?? [];
+    localized.itinerary = tour.itinerary.map((item, index) => {
+      const translated = translatedItinerary[index];
+      if (!translated) {
+        return { ...item };
+      }
+
+      const schedule =
+        Array.isArray(translated.schedule) && translated.schedule.length > 0
+          ? [...translated.schedule]
+          : Array.isArray(item.schedule)
+            ? [...item.schedule]
+            : undefined;
+
+      const entry = {
+        ...item,
+        title: translated.title ?? item.title,
+        description: translated.description ?? item.description,
+      };
+
+      if (schedule) {
+        entry.schedule = schedule;
+      } else if ('schedule' in entry) {
+        delete entry.schedule;
+      }
+
+      return entry;
+    });
+  }
+
+  return localized;
+}
+
+function localizeTours(tours, language) {
+  if (language === 'vi') {
+    return tours;
+  }
+  return tours.map((tour) => applyTourTranslations(tour, language));
+}
+
 const INITIAL_STAYS = STAY_CATALOG.map((stay) => ({
   id: stay.id,
   name: stay.name,
@@ -1692,6 +1767,15 @@ const INITIAL_TOURS = RAW_INITIAL_TOURS.map((tour) => {
     itinerary,
   };
 });
+
+const STORAGE_KEYS = {
+  users: 'sevenTravelUsers',
+  currentUserId: 'sevenTravelCurrentUserId',
+  bookings: 'sevenTravelBookings',
+  topups: 'sevenTravelTopUps',
+  transportContacts: 'sevenTravelTransportContacts',
+  supportMessages: 'sevenTravelSupportMessages',
+};
 
 const INITIAL_USERS = [
   {
@@ -1760,6 +1844,7 @@ const INITIAL_TOPUPS = [
 const INITIAL_SUPPORT_MESSAGES = [];
 
 export function AuthProvider({ children }) {
+  const { language } = useLanguage();
   const [users, setUsers] = useState(INITIAL_USERS);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [supabaseUser, setSupabaseUser] = useState(null);
@@ -1771,8 +1856,74 @@ export function AuthProvider({ children }) {
   const [topUpRequests, setTopUpRequests] = useState(INITIAL_TOPUPS);
   const [transportContacts, setTransportContacts] = useState(INITIAL_TRANSPORT_CONTACTS);
   const [supportMessages, setSupportMessages] = useState(INITIAL_SUPPORT_MESSAGES);
+  const localizedTours = useMemo(() => localizeTours(tours, language), [tours, language]);
 
   const currentUser = users.find((user) => user.id === currentUserId) ?? null;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      const rawUsers = window.localStorage.getItem(STORAGE_KEYS.users);
+      if (rawUsers) {
+        const parsed = JSON.parse(rawUsers);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setUsers(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn('Không thể đọc dữ liệu người dùng từ localStorage.', error);
+    }
+    const savedUserId = window.localStorage.getItem(STORAGE_KEYS.currentUserId);
+    if (savedUserId) {
+      setCurrentUserId(savedUserId);
+    }
+    try {
+      const rawBookings = window.localStorage.getItem(STORAGE_KEYS.bookings);
+      if (rawBookings) {
+        const parsed = JSON.parse(rawBookings);
+        if (Array.isArray(parsed)) {
+          setBookings(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn('Không thể đọc dữ liệu đặt dịch vụ từ localStorage.', error);
+    }
+    try {
+      const rawTopups = window.localStorage.getItem(STORAGE_KEYS.topups);
+      if (rawTopups) {
+        const parsed = JSON.parse(rawTopups);
+        if (Array.isArray(parsed)) {
+          setTopUpRequests(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn('Không thể đọc yêu cầu nạp tiền từ localStorage.', error);
+    }
+    try {
+      const rawTransportContacts = window.localStorage.getItem(STORAGE_KEYS.transportContacts);
+      if (rawTransportContacts) {
+        const parsed = JSON.parse(rawTransportContacts);
+        if (Array.isArray(parsed)) {
+          setTransportContacts(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn('Không thể đọc liên hệ vận chuyển từ localStorage.', error);
+    }
+    try {
+      const rawSupports = window.localStorage.getItem(STORAGE_KEYS.supportMessages);
+      if (rawSupports) {
+        const parsed = JSON.parse(rawSupports);
+        if (Array.isArray(parsed)) {
+          setSupportMessages(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn('Không thể đọc tin nhắn hỗ trợ từ localStorage.', error);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -1797,6 +1948,72 @@ export function AuthProvider({ children }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+    } catch (error) {
+      console.warn('Không thể lưu dữ liệu người dùng.', error);
+    }
+  }, [users]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (currentUserId) {
+      window.localStorage.setItem(STORAGE_KEYS.currentUserId, currentUserId);
+    } else {
+      window.localStorage.removeItem(STORAGE_KEYS.currentUserId);
+    }
+  }, [currentUserId]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.bookings, JSON.stringify(bookings));
+    } catch (error) {
+      console.warn('Không thể lưu dữ liệu đặt dịch vụ.', error);
+    }
+  }, [bookings]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.topups, JSON.stringify(topUpRequests));
+    } catch (error) {
+      console.warn('Không thể lưu dữ liệu nạp tiền.', error);
+    }
+  }, [topUpRequests]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.transportContacts, JSON.stringify(transportContacts));
+    } catch (error) {
+      console.warn('Không thể lưu dữ liệu liên hệ vận chuyển.', error);
+    }
+  }, [transportContacts]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.supportMessages, JSON.stringify(supportMessages));
+    } catch (error) {
+      console.warn('Không thể lưu dữ liệu hỗ trợ khách hàng.', error);
+    }
+  }, [supportMessages]);
 
   useEffect(() => {
     if (!supabaseUser) {
@@ -1971,19 +2188,45 @@ export function AuthProvider({ children }) {
       email: fallback.email,
       phone: profile?.phone_number ?? fallback.phone ?? '',
       balance: fallback.balance ?? 0,
-      transactions: fallback.transactions ?? [],
+      transactions: Array.isArray(fallback.transactions) ? fallback.transactions : [],
     };
+
+    let mergedUser = composedUser;
+
     setUsers((prev) => {
-      const exists = prev.some((candidate) => candidate.id === composedUser.id);
-      if (exists) {
+      const existing = prev.find((candidate) => candidate.id === composedUser.id);
+      if (existing) {
+        mergedUser = {
+          ...existing,
+          ...composedUser,
+          balance:
+            profile?.balance ??
+            (fallback.balance !== undefined ? fallback.balance : existing.balance ?? 0),
+          transactions:
+            Array.isArray(composedUser.transactions) && composedUser.transactions.length > 0
+              ? composedUser.transactions
+              : Array.isArray(existing.transactions)
+                ? existing.transactions
+                : [],
+        };
         return prev.map((candidate) =>
-          candidate.id === composedUser.id ? { ...candidate, ...composedUser } : candidate
+          candidate.id === mergedUser.id ? mergedUser : candidate
         );
       }
-      return [...prev, composedUser];
+      mergedUser = {
+        ...composedUser,
+        balance:
+          profile?.balance ??
+          (fallback.balance !== undefined ? fallback.balance : 0),
+        transactions: Array.isArray(composedUser.transactions)
+          ? composedUser.transactions
+          : [],
+      };
+      return [...prev, mergedUser];
     });
-    setCurrentUserId(composedUser.id);
-    return composedUser;
+
+    setCurrentUserId(mergedUser.id);
+    return mergedUser;
   };
 
   const localLogin = (phone, password) => {
@@ -2019,14 +2262,19 @@ export function AuthProvider({ children }) {
         });
       }
 
+      const existingUser = users.find((candidate) => candidate.id === user.id);
+
       return mergeProfileIntoState(resolvedProfile, {
         id: user.id,
-        role: resolvedProfile?.role ?? 'customer',
-        name: resolvedProfile?.full_name ?? user.email,
+        role: resolvedProfile?.role ?? existingUser?.role ?? 'customer',
+        name:
+          resolvedProfile?.full_name ??
+          existingUser?.name ??
+          user.email,
         email,
-        phone: resolvedProfile?.phone_number ?? identifier,
-        balance: 0,
-        transactions: [],
+        phone: resolvedProfile?.phone_number ?? existingUser?.phone ?? identifier,
+        balance: existingUser?.balance ?? 0,
+        transactions: existingUser?.transactions ?? [],
       });
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Đăng nhập thất bại.');
@@ -2199,13 +2447,13 @@ export function AuthProvider({ children }) {
 
     const timestamp = new Date().toISOString();
 
+    if ((currentUser.balance ?? 0) < resolvedAmount) {
+      throw new Error('Số dư không đủ. Vui lòng nạp thêm tiền trước khi đặt tour.');
+    }
+
     const {
       data: { session },
     } = await supabase.auth.getSession();
-
-    if (!session) {
-      throw new Error('Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.');
-    }
 
     const bookingPayload = {
       items: [
@@ -2230,23 +2478,29 @@ export function AuthProvider({ children }) {
     };
 
     let remoteBooking = null;
-    try {
-      const response = await fetch('/.netlify/functions/bookings-create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify(bookingPayload),
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.error || 'Không thể ghi nhận đặt dịch vụ.');
-      }
-      remoteBooking = result.booking;
-    } catch (error) {
+    if (!session?.access_token) {
       // eslint-disable-next-line no-console
-      console.error('Failed to sync booking with Supabase:', error);
+      console.warn('Không tìm thấy phiên Supabase khi đặt dịch vụ, lưu vào bộ nhớ cục bộ.');
+    }
+    if (session?.access_token) {
+      try {
+        const response = await fetch('/.netlify/functions/bookings-create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(bookingPayload),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || 'Không thể ghi nhận đặt dịch vụ.');
+        }
+        remoteBooking = result.booking;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to sync booking with Supabase:', error);
+      }
     }
 
     const bookingId = remoteBooking?.id ?? createId('booking');
@@ -2632,7 +2886,7 @@ const submitSupportMessage = ({ message }) => {
       adminConfirmBooking,
       users,
       customers,
-      tours,
+      tours: localizedTours,
       transportOptions,
       stayOptions,
       bookings,
@@ -2646,7 +2900,7 @@ const submitSupportMessage = ({ message }) => {
       authLoading,
       users,
       customers,
-      tours,
+      localizedTours,
       transportOptions,
       stayOptions,
       bookings,

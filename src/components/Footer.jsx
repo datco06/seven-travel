@@ -1,55 +1,128 @@
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext.jsx';
 
-const GUIDE_LINKS = [
-  { to: '/', label: 'Trang chủ' },
-  { to: '/tao-tour', label: 'Tour' },
-  { to: '/di-chuyen', label: 'Di chuyển' },
-  { to: '/luu-tru', label: 'Lưu trú' },
-];
-
-const INFO_LINKS = [
-  { to: '/cau-hoi-thuong-gap', label: 'Câu hỏi thường gặp' },
-  { to: '/dieu-khoan-dieu-kien', label: 'Điều kiện, điều khoản' },
-  { to: '/quy-che-hoat-dong', label: 'Quy chế hoạt động' },
-];
+const FOOTER_COPY = {
+  vi: {
+    contact: {
+      title: 'THÔNG TIN LIÊN HỆ',
+      addressLabel: 'Địa chỉ',
+      addressValue: 'Tòa nhà Ladeco, Đống Đa, Hà Nội',
+      emailLabel: 'Email',
+      emailValue: 'Traveltour@gmail.com.vn',
+      hotlineLabel: 'Hotline',
+      hotlineValue: '1900 6789',
+      mapLabel: 'Mở bản đồ Google',
+    },
+    guide: {
+      title: 'HƯỚNG DẪN',
+      links: [
+        { to: '/', label: 'Trang chủ' },
+        { to: '/tao-tour', label: 'Tour' },
+        { to: '/di-chuyen', label: 'Di chuyển' },
+        { to: '/luu-tru', label: 'Lưu trú' },
+      ],
+    },
+    info: {
+      title: 'THÔNG TIN CẦN BIẾT',
+      links: [
+        { to: '/cau-hoi-thuong-gap', label: 'Câu hỏi thường gặp' },
+        { to: '/dieu-khoan-dieu-kien', label: 'Điều kiện, điều khoản' },
+        { to: '/quy-che-hoat-dong', label: 'Quy chế hoạt động' },
+      ],
+    },
+    connect: {
+      title: 'KẾT NỐI',
+      social: [
+        { icon: 'fab fa-facebook', href: '#', label: 'Facebook' },
+        { icon: 'fab fa-youtube', href: '#', label: 'YouTube' },
+        { icon: 'fab fa-twitter', href: '#', label: 'Twitter' },
+        { icon: 'fab fa-instagram', href: '#', label: 'Instagram' },
+        { icon: 'fab fa-google', href: '#', label: 'Google' },
+      ],
+    },
+  },
+  en: {
+    contact: {
+      title: 'CONTACT',
+      addressLabel: 'Address',
+      addressValue: 'Ladeco Building, Dong Da, Hanoi',
+      emailLabel: 'Email',
+      emailValue: 'Traveltour@gmail.com.vn',
+      hotlineLabel: 'Hotline',
+      hotlineValue: '1900 6789',
+      mapLabel: 'Open in Google Maps',
+    },
+    guide: {
+      title: 'GUIDE',
+      links: [
+        { to: '/', label: 'Home' },
+        { to: '/tao-tour', label: 'Create a tour' },
+        { to: '/di-chuyen', label: 'Transport' },
+        { to: '/luu-tru', label: 'Stay' },
+      ],
+    },
+    info: {
+      title: 'NEED TO KNOW',
+      links: [
+        { to: '/cau-hoi-thuong-gap', label: 'Frequently asked questions' },
+        { to: '/dieu-khoan-dieu-kien', label: 'Terms & conditions' },
+        { to: '/quy-che-hoat-dong', label: 'Operating regulations' },
+      ],
+    },
+    connect: {
+      title: 'CONNECT',
+      social: [
+        { icon: 'fab fa-facebook', href: '#', label: 'Facebook' },
+        { icon: 'fab fa-youtube', href: '#', label: 'YouTube' },
+        { icon: 'fab fa-twitter', href: '#', label: 'Twitter' },
+        { icon: 'fab fa-instagram', href: '#', label: 'Instagram' },
+        { icon: 'fab fa-google', href: '#', label: 'Google' },
+      ],
+    },
+  },
+};
 
 function Footer() {
+  const { language } = useLanguage();
+  const copy = FOOTER_COPY[language] ?? FOOTER_COPY.vi;
+
   return (
     <footer>
       <div className="chan">
         <div className="chan1">
-          <h3>THÔNG TIN LIÊN HỆ</h3>
+          <h3>{copy.contact.title}</h3>
           <ul>
-            <li><h4>Địa chỉ</h4></li>
+            <li><h4>{copy.contact.addressLabel}</h4></li>
             <li>
               <a
                 href="https://maps.google.com/?q=Tòa nhà Ladeco, Đống Đa, Hà Nội"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-link"
+                aria-label={copy.contact.mapLabel}
               >
-                Tòa nhà Ladeco, Đống Đa, Hà Nội
+                {copy.contact.addressValue}
               </a>
             </li>
-            <li><h4>Email</h4></li>
+            <li><h4>{copy.contact.emailLabel}</h4></li>
             <li>
               <a href="mailto:Traveltour@gmail.com.vn" className="footer-link">
-                Traveltour@gmail.com.vn
+                {copy.contact.emailValue}
               </a>
             </li>
-            <li><h4>Hotline</h4></li>
+            <li><h4>{copy.contact.hotlineLabel}</h4></li>
             <li>
               <a href="tel:19006789" className="footer-link">
-                1900 6789
+                {copy.contact.hotlineValue}
               </a>
             </li>
           </ul>
         </div>
         <div className="chan2">
-          <h3>HƯỚNG DẪN</h3>
+          <h3>{copy.guide.title}</h3>
           <ul>
-            {GUIDE_LINKS.map(({ to, label }) => (
-              <li key={to}>
+            {copy.guide.links.map(({ to, label }) => (
+              <li key={`${language}-${to}`}>
                 <Link to={to} className="footer-link">
                   {label}
                 </Link>
@@ -58,10 +131,10 @@ function Footer() {
           </ul>
         </div>
         <div className="chan3">
-          <h3>THÔNG TIN CẦN BIẾT</h3>
+          <h3>{copy.info.title}</h3>
           <ul>
-            {INFO_LINKS.map(({ to, label }) => (
-              <li key={to}>
+            {copy.info.links.map(({ to, label }) => (
+              <li key={`${language}-${to}`}>
                 <Link to={to} className="footer-link">
                   {label}
                 </Link>
@@ -70,26 +143,14 @@ function Footer() {
           </ul>
         </div>
         <div className="chan4">
-          <h3>KẾT NỐI</h3>
+          <h3>{copy.connect.title}</h3>
           <div className="social-icons">
-            <a href="#" aria-label="Facebook">
-              <i className="fab fa-facebook"></i>
-            </a>
-            <a href="#" aria-label="YouTube">
-              <i className="fab fa-youtube"></i>
-            </a>
-            <a href="#" aria-label="Twitter">
-              <i className="fab fa-twitter"></i>
-            </a>
-            <a href="#" aria-label="Instagram">
-              <i className="fab fa-instagram"></i>
-            </a>
-            <a href="#" aria-label="Google">
-              <i className="fab fa-google"></i>
-            </a>
+            {copy.connect.social.map((item) => (
+              <a key={item.icon} href={item.href} aria-label={item.label}>
+                <i className={item.icon}></i>
+              </a>
+            ))}
           </div>
-          <h3>PHƯƠNG THỨC THANH TOÁN</h3>
-          <img src="/anh/image copy 29.png" className="thanhtoan" alt="Phương thức thanh toán" />
         </div>
       </div>
     </footer>

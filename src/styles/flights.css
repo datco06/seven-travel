@@ -513,12 +513,6 @@ footer {
   color: #007bff; /* Example hover color */
 }
 
-/* Styling for PHƯƠNG THỨC THANH TOÁN image */
-.chan4 .thanhtoan {
-  max-width: 250px; /* Adjust based on your image and desired size */
-  height: auto; /* Maintain aspect ratio */
-  margin-top: 10px; /* Space above payment image */
-}
 /* === END OF FOOTER STYLES (NEW) === */
 
 /* ========================= RESPONSIVE CHO CÁC PHẦN ========================= */

@@ -3,7 +3,9 @@ import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import CreateTour from './pages/CreateTour.jsx';
 import Transport from './pages/Transport.jsx';
+import TransportJourneyDetail from './pages/TransportJourneyDetail.jsx';
 import Stay from './pages/Stay.jsx';
+import StayCollectionDetail from './pages/StayCollectionDetail.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import CustomerAccount from './pages/CustomerAccount.jsx';
@@ -42,7 +44,9 @@ function App() {
               <Route index element={<Home />} />
               <Route path="tao-tour" element={<CreateTour />} />
               <Route path="di-chuyen" element={<Transport />} />
+              <Route path="di-chuyen/:journeySlug" element={<TransportJourneyDetail />} />
               <Route path="luu-tru" element={<Stay />} />
+              <Route path="luu-tru/:collectionSlug" element={<StayCollectionDetail />} />
               <Route path="tour-ha-noi" element={<HanoiTours />} />
               <Route path="tour-hai-phong" element={<HaiPhongTours />} />
               <Route path="tour-ninh-binh" element={<NinhBinhTours />} />

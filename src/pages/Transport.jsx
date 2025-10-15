@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/transport.css';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FIXED_DESTINATIONS } from '../components/TourExplorer.jsx';
 
-const CONTENT = {
+export const TRANSPORT_CONTENT = {
   vi: {
     hero: {
       tag: 'Di chuyển linh hoạt',
@@ -73,22 +74,31 @@ const CONTENT = {
       title: 'Ba hành trình được yêu thích',
       cards: [
         {
+          slug: 'central-heritage-arc',
           title: 'Vòng cung di sản miền Trung',
           description:
             'Xe riêng đưa đón từ Đà Nẵng - Huế - Hội An, kết hợp tàu hỏa ngắm biển Lăng Cô và du thuyền sông Hương buổi tối.',
           image: '/anh/dichuyen/codohue.jpg',
+          detail:
+            'Hành trình trọn vẹn dọc dải duyên hải miền Trung với xe riêng hạng sang, trải nghiệm tàu hoả ngắm cảnh Lăng Cô và bữa tối trên sông Hương. Đoàn concierge đồng hành 24/7 đảm bảo từng khoảnh khắc đều mượt mà.',
         },
         {
+          slug: 'cloud-chasing-northwest',
           title: 'Săn mây Tây Bắc',
           description:
             'Limousine giường nằm Hà Nội - Sa Pa, trekking bản Tả Van cùng porter địa phương, kết thúc bằng xe jeep săn mây Y Tý.',
           image: '/anh/image%20copy%2033.png',
+          detail:
+            'Khám phá dải núi Tây Bắc hùng vĩ với limousine giường nằm, trekking nhẹ cùng porter bản địa và chuyến jeep săn mây Y Tý lúc bình minh. Dịch vụ ăn uống và nghỉ dưỡng boutique được sắp xếp xuyên suốt.',
         },
         {
+          slug: 'phu-quoc-island-hop',
           title: 'Đảo ngọc Phú Quốc',
           description:
             'Thuỷ phi cơ từ TP.HCM, xe buggy riêng tại resort và cano riêng khám phá quần đảo An Thới trong ngày.',
           image: '/anh/dichuyen/daongocphuquoc.jpg',
+          detail:
+            'Tận hưởng kỳ nghỉ biển sang trọng với thuỷ phi cơ riêng, villa hướng biển cùng buggy đưa đón, và chuyến cano độc quyền khám phá quần đảo An Thới. Trải nghiệm ẩm thực và spa được cá nhân hoá theo sở thích.',
         },
       ],
     },
@@ -197,22 +207,31 @@ const CONTENT = {
       title: 'Three journeys travellers love',
       cards: [
         {
+          slug: 'central-heritage-arc',
           title: 'Central heritage arc',
           description:
             'Private transfers across Da Nang, Hue, and Hoi An paired with a coastal train ride and an evening Perfume River cruise.',
           image: '/anh/dichuyen/codohue.jpg',
+          detail:
+            'Glide through Central Vietnam in chauffeured comfort, board the scenic Lang Co railway, and toast the night on a boutique cruise along the Perfume River. A dedicated concierge team handles every detail end-to-end.',
         },
         {
+          slug: 'cloud-chasing-northwest',
           title: 'Cloud-chasing Northwest',
           description:
             'Luxury sleeper from Hanoi to Sa Pa, guided treks in Ta Van, and iconic jeep rides through the Y Ty cloud oceans.',
           image: '/anh/image%20copy%2033.png',
+          detail:
+            'Ascend the misty mountains with a luxury sleeper coach, immersive treks led by local porters, and dawn jeep rides through the rolling cloud seas of Y Ty. Boutique stays and dining are curated for every stop.',
         },
         {
+          slug: 'phu-quoc-island-hop',
           title: 'Phu Quoc island hop',
           description:
             'Seaplane from Ho Chi Minh City, private buggy at the resort, and charter speedboat through the An Thoi archipelago.',
           image: '/anh/dichuyen/daongocphuquoc.jpg',
+          detail:
+            'Indulge in a sun-soaked escape with a private seaplane arrival, oceanfront villa complete with buggy, and a bespoke speedboat journey across the An Thoi islets. Expect personalised dining and spa rituals throughout.',
         },
       ],
     },
@@ -258,7 +277,7 @@ const CONTENT = {
 function Transport() {
   const { language } = useLanguage();
   const { currentUser, submitTransportContact } = useAuth();
-  const copy = CONTENT[language];
+  const copy = TRANSPORT_CONTENT[language];
   const [rentalForm, setRentalForm] = useState({
     destination: '',
     vehicle: '16',
@@ -468,17 +487,17 @@ function Transport() {
         <div className="section-heading">
           <h2>{copy.journeys.title}</h2>
         </div>
-        <div className="journey-grid">
+        <div className="journey-card-grid">
           {copy.journeys.cards.map((card) => (
-            <article key={card.title} className="journey-card">
-              <div className="journey-image">
-                <img src={card.image} alt={card.title} />
+            <Link key={card.slug} to={`/di-chuyen/${card.slug}`} className="journey-card">
+              <div className="journey-card__media">
+                <img src={card.image} alt={card.title} loading="lazy" />
               </div>
-              <div className="journey-body">
+              <div className="journey-card__content">
                 <h3>{card.title}</h3>
                 <p>{card.description}</p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>

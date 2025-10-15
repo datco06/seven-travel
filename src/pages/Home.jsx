@@ -119,7 +119,7 @@ const CONTENT = {
     experiences: {
       cards: [
         {
-          title: 'Thăm bảo tàng tư nhân đầu tiên Việt Nam',
+          title: 'Thăm bảo tàng đầu tiên Việt Nam',
           description: 'Lắng nghe câu chuyện văn hoá từ những người canh giữ ký ức.',
           image: '/anh/home/baotangdautien.jpeg',
           to: '/tham-bao-tang-tu-nhan',
@@ -177,25 +177,25 @@ const CONTENT = {
         {
           title: 'Passionate team',
           description: 'We design unforgettable journeys with meticulous care and heartfelt dedication.',
-          image: '/anh/image%20copy%203.png',
+          image: '/anh/doingu.png',
           to: '/doi-ngu-nhiet-huyet',
         },
         {
           title: 'Local experts',
           description: 'Insiders who know every corner of the region and love to share its authentic beauty.',
-          image: '/anh/image%20copy%2010.png',
+          image: '/anh/bandia.png',
           to: '/chuyen-gia-ban-dia',
         },
         {
           title: 'Personalised service',
           description: 'Every itinerary is tailored to your tastes with 24/7 support.',
-          image: '/anh/image%20copy%2014.png',
+          image: '/anh/dichvu.png',
           to: '/dich-vu-ca-nhan-hoa',
         },
         {
           title: 'Sustainable approach',
           description: 'We connect travellers with communities through environmentally friendly experiences.',
-          image: '/anh/image%20copy%2016.png',
+          image: '/anh/moitruong.png',
           to: '/du-lich-ben-vung',
         },
       ],
@@ -243,12 +243,12 @@ const CONTENT = {
     },
     destinations: {
       cards: [
-        { title: 'Ha Noi', image: '/anh/image%20copy%2031.png', to: '/tour-ha-noi' },
-        { title: 'Hai Phong', image: '/anh/image%20copy%2030.png', to: '/tour-hai-phong' },
-        { title: 'Ninh Binh', image: '/anh/image%20copy%2027.png', to: '/tour-ninh-binh' },
-        { title: 'Son La', image: '/anh/image%20copy%2034.png', to: '/tour-son-la' },
-        { title: 'Lao Cai', image: '/anh/image%20copy%2035.png', to: '/tour-lao-cai' },
-        { title: 'Phu Tho', image: '/anh/image%20copy%2019.png', to: '/tour-phu-tho' },
+        { title: 'Ha Noi', image: '/anh/home/hanoi.jpg', to: '/tour-ha-noi' },
+        { title: 'Hai Phong', image: '/anh/home/haiphong.jpg', to: '/tour-hai-phong' },
+        { title: 'Ninh Binh', image: '/anh/home/ninhbinh.jpg', to: '/tour-ninh-binh' },
+        { title: 'Son La', image: '/anh/home/sonla.jpg', to: '/tour-son-la' },
+        { title: 'Lao Cai', image: '/anh/home/laocai.webp', to: '/tour-lao-cai' },
+        { title: 'Phu Tho', image: '/anh/home/phutho.jpg', to: '/tour-phu-tho' },
       ],
       title: 'Destinations You Desire',
       description: 'Explore Northern Vietnam highlights curated by Travel Tour specialists.',
@@ -256,27 +256,27 @@ const CONTENT = {
     experiences: {
       cards: [
         {
-          title: "Visit Vietnam's First Private Museum",
+          title: "Visit Vietnam's First Museum",
           description: 'Hear captivating stories and discover cultural heritage with passionate curators.',
-          image: '/anh/image%20copy%205.png',
+          image: '/anh/home/baotangdautien.jpeg',
           to: '/tham-bao-tang-tu-nhan',
         },
         {
           title: 'Culinary Experience With Master Chef',
           description: 'Learn local recipes and explore vibrant markets with a local chef.',
-          image: '/anh/image%20copy%2013.png',
+          image: '/anh/home/amthuc.jpg',
           to: '/trai-nghiem-am-thuc',
         },
         {
           title: 'The Art of Water Puppetry',
           description: 'Immerse yourself in a century-old art form with seasoned artisans.',
-          image: '/anh/image%20copy%204.png',
+          image: '/anh/home/muaroi.jpg',
           to: '/nghe-thuat-mua-roi-nuoc',
         },
         {
           title: 'Street Food Tour',
           description: 'Stroll lively streets and savour authentic flavours.',
-          image: '/anh/image.png',
+          image: '/anh/home/amthucduongpho.jpg',
           to: '/tour-am-thuc-duong-pho',
         },
       ],

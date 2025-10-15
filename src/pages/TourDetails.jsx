@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import '../styles/tourExplorer.css';
 import '../styles/tourDetails.css';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import { TOUR_EXPLORER_COPY } from '../components/TourExplorer.jsx';
+import { BOOKING_MESSAGES, mapBookingErrorMessage } from '../constants/bookingMessages.js';
 
 const PAGE_COPY = {
   vi: {
@@ -24,12 +25,15 @@ const PAGE_COPY = {
 function TourDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { tours } = useAuth();
+  const { tours, currentUser, bookProduct } = useAuth();
   const { language } = useLanguage();
 
   const copy = TOUR_EXPLORER_COPY[language];
   const pageCopy = PAGE_COPY[language];
+  const bookingMessages = BOOKING_MESSAGES[language] ?? BOOKING_MESSAGES.vi;
   const [guestCounts, setGuestCounts] = useState({ adults: 2, children: 0 });
+  const [bookingStatus, setBookingStatus] = useState({ state: null, message: '' });
+  const redirectTimerRef = useRef(null);
 
   const tour = useMemo(
     () => tours.find((item) => item.slug === slug || item.id === slug) ?? null,
@@ -43,6 +47,7 @@ function TourDetails() {
     () => adultUnitPrice * guestCounts.adults + childUnitPrice * guestCounts.children,
     [adultUnitPrice, childUnitPrice, guestCounts.adults, guestCounts.children]
   );
+  const totalGuests = guestCounts.adults + guestCounts.children;
 
   const handleGuestChange = (event) => {
     const { name, value } = event.target;
@@ -56,6 +61,13 @@ function TourDetails() {
     setGuestCounts({ adults: 2, children: 0 });
   }, [tour?.id]);
 
+  useEffect(() => () => {
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
+  }, []);
+
   const currencyFormatter = useMemo(
     () =>
       new Intl.NumberFormat('vi-VN', {
@@ -65,6 +77,59 @@ function TourDetails() {
       }),
     []
   );
+
+  const handleBookTour = async () => {
+    if (!currentUser) {
+      setBookingStatus({ state: 'error', message: bookingMessages.loginRequired });
+      return;
+    }
+
+    if (currentUser.role !== 'customer') {
+      setBookingStatus({ state: 'error', message: bookingMessages.roleNotAllowed });
+      return;
+    }
+
+    if (totalGuests <= 0 || totalPrice <= 0) {
+      setBookingStatus({
+        state: 'error',
+        message:
+          language === 'vi'
+            ? 'Hãy nhập số lượng khách hợp lệ trước khi đặt.'
+            : 'Please enter a valid guest count before booking.',
+      });
+      return;
+    }
+
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
+
+    setBookingStatus({ state: 'pending', message: bookingMessages.processing });
+
+    try {
+      await bookProduct({
+        category: 'tour',
+        productId: tour.id,
+        amountOverride: totalPrice,
+        details: {
+          source: 'tour-detail',
+          guestCount: totalGuests,
+          adults: guestCounts.adults,
+          children: guestCounts.children,
+          tourName: tour.name,
+        },
+      });
+      setBookingStatus({ state: 'success', message: bookingMessages.success });
+      redirectTimerRef.current = setTimeout(() => {
+        redirectTimerRef.current = null;
+        navigate('/tai-khoan');
+      }, 1500);
+    } catch (error) {
+      const derived = mapBookingErrorMessage(language, error.message);
+      setBookingStatus({ state: 'error', message: derived });
+    }
+  };
 
   if (!tour) {
     return (
@@ -234,9 +299,19 @@ function TourDetails() {
               <strong>{formattedTotalPrice}</strong>
             </div>
           </form>
-          <Link to="/tao-tour#tour-explorer-page" className="tour-detail__book">
-            {copy.bookTour}
-          </Link>
+          <div className="tour-detail__cta">
+            {bookingStatus.message ? (
+              <p className={`tour-detail__status ${bookingStatus.state ?? ''}`}>{bookingStatus.message}</p>
+            ) : null}
+            <button
+              type="button"
+              className="tour-detail__book"
+              onClick={handleBookTour}
+              disabled={bookingStatus.state === 'pending'}
+            >
+              {bookingStatus.state === 'pending' ? '...' : copy.bookTour}
+            </button>
+          </div>
         </footer>
       </div>
     </div>

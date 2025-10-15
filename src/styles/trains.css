@@ -487,12 +487,6 @@ footer {
   color: #007bff;
 }
 
-.chan4 .thanhtoan {
-  max-width: 250px;
-  height: auto; 
-  margin-top: 10px;
-}
-
 @media (max-width: 768px) {
   .chan {
     flex-direction: column; 
@@ -659,7 +653,6 @@ showError{
     margin-top: 4px;
     display: none;
 }
-
 
 
 

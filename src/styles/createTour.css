@@ -736,13 +736,6 @@ footer .social-icons a:hover {
   color: #4fc3f7;
   transform: scale(1.1);
 }
-footer .thanhtoan {
-  width: 100%; /* Responsive */
-  max-width: 250px; /* Giới hạn chiều rộng */
-  height: auto;
-  margin-top: 10px;
-  border-radius: 5px;
-}
 .copyright {
   text-align: center;
   padding: 25px 0 10px 0;
@@ -875,8 +868,5 @@ footer .thanhtoan {
   }
   footer .social-icons {
     justify-content: center;
-  }
-  footer .thanhtoan {
-    margin: 10px auto 0 auto;
   }
 }

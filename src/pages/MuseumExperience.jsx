@@ -6,12 +6,12 @@ const CONTENT = {
   vi: {
     hero: {
       kicker: 'Cultural Encounters',
-      title: 'Thăm bảo tàng tư nhân đầu tiên Việt Nam',
+      title: 'Thăm bảo tàng đầu tiên Việt Nam',
       subtitle:
         'Lắng nghe câu chuyện lịch sử và gặp gỡ người gìn giữ ký ức dân tộc trong không gian bảo tàng độc đáo giữa lòng phố cổ.',
     },
     intro: [
-      'Bảo tàng tư nhân đầu tiên của Việt Nam là nơi lưu giữ hơn hàng nghìn hiện vật quý hiếm về đời sống, chiến tranh và văn hoá dân gian. Chủ nhân bảo tàng dành cả đời để sưu tầm, phục dựng và kể lại những câu chuyện đã từng bị lãng quên.',
+      'Bảo tàng được gây dựng bởi một nhà sưu tầm đam mê, lưu giữ hơn hàng nghìn hiện vật quý hiếm về đời sống, chiến tranh và văn hoá dân gian. Chủ nhân bảo tàng dành cả đời để sưu tầm, phục dựng và kể lại những câu chuyện đã từng bị lãng quên.',
       'Khi tham gia trải nghiệm, bạn được đồng hành cùng người thuyết minh là chính chủ nhân bảo tàng – người hiểu từng hiện vật và câu chuyện phía sau. Không gian ấm cúng giúp du khách cảm nhận chiều sâu văn hoá qua góc nhìn cá nhân đầy đam mê.',
     ],
     valuesTitle: 'Điều khiến trải nghiệm khác biệt',
@@ -47,19 +47,19 @@ const CONTENT = {
       'Triển lãm mỹ thuật đương đại',
     ],
     closing: [
-      'Thăm bảo tàng tư nhân là cơ hội để bạn nhìn lại lịch sử qua lăng kính cá nhân đầy cảm xúc. Những hiện vật bé nhỏ được nâng niu, những câu chuyện tầng tầng lớp lớp sẽ khiến bạn trân quý hơn giá trị văn hoá Việt.',
+      'Thăm bảo tàng này là cơ hội để bạn nhìn lại lịch sử qua lăng kính cá nhân đầy cảm xúc. Những hiện vật bé nhỏ được nâng niu, những câu chuyện tầng tầng lớp lớp sẽ khiến bạn trân quý hơn giá trị văn hoá Việt.',
       'Hãy đặt lịch trước để chúng tôi thu xếp buổi gặp gỡ riêng tư, giúp bạn có trải nghiệm sâu sắc và trọn vẹn nhất.',
     ],
   },
   en: {
     hero: {
       kicker: 'Cultural Encounters',
-      title: "Visit Vietnam's First Private Museum",
+      title: "Visit Vietnam's First Museum",
       subtitle:
-        'Step inside a private treasury of memories where the curator personally shares stories behind every artefact.',
+        'Step inside a treasury of memories where the curator personally shares stories behind every artefact.',
     },
     intro: [
-      "Vietnam's first private museum safeguards thousands of rare artefacts that portray daily life, wartime memories, and folk culture. The founder devoted decades to collecting, restoring, and retelling stories that might otherwise fade.",
+      'This museum safeguards thousands of rare artefacts that portray daily life, wartime memories, and folk culture. The founder devoted decades to collecting, restoring, and retelling stories that might otherwise fade.',
       'During the experience, you are guided by the owner himself. His personal anecdotes and passion illuminate each object, turning the visit into an intimate conversation with history.',
     ],
     valuesTitle: 'What makes it special',
@@ -95,7 +95,7 @@ const CONTENT = {
       'Contemporary fine arts showcase',
     ],
     closing: [
-      'A private museum visit lets you reconnect with history through heartfelt storytelling. Small artefacts carry profound meaning when shared with passion.',
+      'A visit here lets you reconnect with history through heartfelt storytelling. Small artefacts carry profound meaning when shared with passion.',
       'Reserve in advance so we can coordinate an intimate session tailored to your interests.',
     ],
   },
