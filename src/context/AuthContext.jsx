@@ -251,7 +251,7 @@ const RAW_INITIAL_TOURS = [
     description:
       'Tour kết hợp thành phố Cảng và đảo Cát Bà thơ mộng, phù hợp gia đình mong muốn nghỉ dưỡng nhanh mà vẫn đầy đủ điểm nhấn.',
     regions: ['Hải Phòng'],
-    hiddenFromExplorer: true,
+    hiddenFromExplorer: false,
     heroImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4aQuMqJSbyWro_9OxooVJLHvpkY5QLu50hA&s',
     gallery: [
       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4aQuMqJSbyWro_9OxooVJLHvpkY5QLu50hA&s',
@@ -321,7 +321,7 @@ const RAW_INITIAL_TOURS = [
     description:
       'Tour lý tưởng cho gia đình muốn nghỉ dưỡng dài ngày tại Hải Phòng: tắm biển Đồ Sơn, du thuyền Lan Hạ, BBQ giao lưu.',
     regions: ['Hải Phòng'],
-    hiddenFromExplorer: true,
+    hiddenFromExplorer: false,
     heroImage: 'https://bizweb.dktcdn.net/100/101/075/files/do-son-hai-phong.jpg?v=1728053345846',
     gallery: [
       'https://bizweb.dktcdn.net/100/101/075/files/do-son-hai-phong.jpg?v=1728053345846',
@@ -405,7 +405,7 @@ const RAW_INITIAL_TOURS = [
     description:
       'Tour mở rộng dành cho du khách muốn khám phá trọn vẹn Hải Phòng – Cát Bà – Lan Hạ – Hạ Long, phù hợp nhóm gia đình, công ty.',
     regions: ['Hải Phòng'],
-    hiddenFromExplorer: true,
+    hiddenFromExplorer: false,
     heroImage: 'https://cafefcdn.com/203337114487263232/2023/8/8/photo-1-16914842509611381562830-1691502928818-1691502928982795189168.jpg',
     gallery: [
       'https://cafefcdn.com/203337114487263232/2023/8/8/photo-1-16914842509611381562830-1691502928818-1691502928982795189168.jpg',

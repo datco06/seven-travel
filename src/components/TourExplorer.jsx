@@ -78,6 +78,16 @@ const currencyFormatter = new Intl.NumberFormat('vi-VN', {
 
 export const FIXED_DESTINATIONS = ['Hà Nội', 'Hải Phòng', 'Ninh Bình', 'Sơn La', 'Lào Cai', 'Phú Thọ'];
 
+const normaliseSearchText = (text) => {
+  if (!text) return '';
+  return text
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+};
+
 const DAY_PATTERNS = [/(\d+)\s*ngày/i, /(\d+)\s*day/i];
 const NIGHT_PATTERNS = [/(\d+)\s*đêm/i, /(\d+)\s*night/i];
 
@@ -179,8 +189,10 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
   const [guestSelections, setGuestSelections] = useState({});
 
   const explorerTours = useMemo(() => {
-    const allowed = new Set(FIXED_DESTINATIONS.map((item) => item.toLowerCase()));
-    const normalise = (text) => text?.toLowerCase?.() ?? '';
+    const allowed = new Set(
+      FIXED_DESTINATIONS.map((item) => normaliseSearchText(item)).filter(Boolean),
+    );
+    const normalise = (text) => normaliseSearchText(text);
     return tours.filter((tour) => {
       if (tour.hiddenFromExplorer) return false;
       const regions = (tour.regions ?? []).map((region) => normalise(region));
@@ -230,13 +242,13 @@ function TourExplorer({ anchorId = 'tour-explorer', showHeading = true }) {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    const normalizedDestination = filters.destination.trim().toLowerCase();
+    const normalizedDestination = normaliseSearchText(filters.destination.trim());
     const filteredTours = explorerTours.filter((tour) => {
-      const tourRegions = (tour.regions ?? []).map((region) => region.toLowerCase());
+      const tourRegions = (tour.regions ?? []).map((region) => normaliseSearchText(region));
       const matchesDestination = normalizedDestination
         ? tourRegions.some((region) => region.includes(normalizedDestination)) ||
-          tour.name.toLowerCase().includes(normalizedDestination) ||
-          (tour.summary ?? '').toLowerCase().includes(normalizedDestination)
+          normaliseSearchText(tour.name).includes(normalizedDestination) ||
+          normaliseSearchText(tour.summary ?? '').includes(normalizedDestination)
         : true;
       const tourDurationValue = durationValueFromTour(tour);
       const matchesDuration = filters.duration ? tourDurationValue === filters.duration : true;
