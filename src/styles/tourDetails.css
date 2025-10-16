@@ -68,6 +68,341 @@
   justify-content: center;
 }
 
+.tour-detail__reviews-block {
+  margin: 40px 0 0;
+}
+
+.tour-detail__reviews {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  margin: 48px 0;
+  padding: 36px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #f2f6ff 0%, #ffffff 50%, #fff4f2 100%);
+  box-shadow: 0 35px 70px rgba(9, 30, 66, 0.14);
+  border: 1px solid rgba(26, 60, 90, 0.08);
+}
+
+.tour-review__summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(195deg, #11273f 0%, #1f4a6f 55%, #2d5f83 100%);
+  box-shadow: 0 25px 45px rgba(10, 36, 66, 0.3);
+  color: #fff;
+}
+
+.tour-review__summary-card h4 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: 0.01em;
+}
+
+.tour-review__score {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.tour-review__value {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tour-review__stars {
+  display: inline-flex;
+  gap: 6px;
+  color: #ffd86d;
+  font-size: 20px;
+}
+
+.tour-review__stars .fa-star {
+  opacity: 0.35;
+}
+
+.tour-review__stars .fa-star.filled {
+  opacity: 1;
+}
+
+.tour-review__meta {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.tour-review__meta span {
+  opacity: 0.85;
+}
+
+.tour-review__meta strong {
+  color: #fff;
+  font-size: 16px;
+}
+
+.tour-review__breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.tour-review__breakdown-row {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.tour-review__breakdown-label {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tour-review__breakdown-bar {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.tour-review__breakdown-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffd56f 0%, #f39c12 100%);
+  transition: width 0.3s ease;
+}
+
+.tour-review__breakdown-value {
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tour-review__share {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.tour-review__share:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.tour-review__content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.tour-review__feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tour-review__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
+  background: #fff;
+  border: 1px solid rgba(26, 60, 90, 0.08);
+  box-shadow: 0 18px 36px rgba(16, 42, 66, 0.08);
+}
+
+.tour-review__card-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.tour-review__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.tour-review__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tour-review__identity strong {
+  font-size: 16px;
+  color: #18324a;
+}
+
+.tour-review__card-stars {
+  display: inline-flex;
+  gap: 4px;
+  color: #ffc857;
+}
+
+.tour-review__card-stars .fa-star {
+  opacity: 0.35;
+}
+
+.tour-review__card-stars .fa-star.filled {
+  opacity: 1;
+}
+
+.tour-review__card-header time {
+  font-size: 13px;
+  color: #526d82;
+}
+
+.tour-review__text {
+  margin: 0;
+  color: #2c3e50;
+  line-height: 1.6;
+}
+
+.tour-review__empty {
+  margin: 0;
+  padding: 32px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px dashed rgba(26, 60, 90, 0.2);
+  text-align: center;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.tour-review__more {
+  align-self: center;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1abc9c, #16a085);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-review__more:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(22, 160, 133, 0.25);
+}
+
+.tour-review__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 28px;
+  background: #ffffff;
+  border: 1px solid rgba(26, 60, 90, 0.08);
+  box-shadow: 0 18px 36px rgba(16, 42, 66, 0.08);
+}
+
+.tour-review__form-header h5 {
+  margin: 0;
+  font-size: 18px;
+  color: #18324a;
+  letter-spacing: 0.01em;
+}
+
+.tour-review__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #1a3c5a;
+}
+
+.tour-review__form input[type='text'],
+.tour-review__form select,
+.tour-review__form textarea {
+  border-radius: 16px;
+  border: 1px solid rgba(26, 60, 90, 0.16);
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1a3c5a;
+  background: rgba(250, 252, 255, 0.9);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-review__form input[type='text']:focus,
+.tour-review__form select:focus,
+.tour-review__form textarea:focus {
+  outline: none;
+  border-color: rgba(26, 60, 90, 0.45);
+  box-shadow: 0 0 0 3px rgba(26, 60, 90, 0.12);
+}
+
+.tour-review__form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.tour-review__feedback {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tour-review__feedback.success {
+  color: #1e8449;
+}
+
+.tour-review__feedback.error {
+  color: #c0392b;
+}
+
+.tour-review__submit {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4b7bec, #3867d6);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-review__submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(56, 103, 214, 0.25);
+}
+
 @media (max-width: 768px) {
   .tour-detail-page {
     margin-top: 70px;
@@ -82,5 +417,33 @@
   .tour-detail-page__back,
   .tour-detail-page__link {
     justify-content: center;
+  }
+
+  .tour-detail__reviews {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .tour-review__summary-card,
+  .tour-review__form {
+    padding: 24px;
+  }
+
+  .tour-review__card {
+    padding: 20px;
+  }
+
+  .tour-review__card-header {
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+  }
+
+  .tour-review__card-header time {
+    grid-column: 1 / -1;
+  }
+
+  .tour-review__more {
+    width: 100%;
   }
 }
