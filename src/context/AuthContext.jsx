@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { STAY_CATALOG } from '../data/stayCatalog.js';
 import { supabase } from '../lib/supabaseClient.js';
 import { useLanguage } from './LanguageContext.jsx';
@@ -25,6 +25,38 @@ function slugify(input) {
 function sanitizePhoneNumber(raw) {
   if (!raw) return '';
   return raw.replace(/\D/g, '');
+}
+
+function buildInitialTourAnalytics(tours) {
+  return (tours ?? []).reduce((acc, tour) => {
+    if (!tour?.id) {
+      return acc;
+    }
+    acc[tour.id] = {
+      tourId: tour.id,
+      slug: tour.slug ?? '',
+      clicks: 0,
+      lastClickedAt: null,
+    };
+    return acc;
+  }, {});
+}
+
+function mergeTourAnalyticsState(base, stored) {
+  const merged = { ...base };
+  if (stored && typeof stored === 'object') {
+    Object.entries(stored).forEach(([tourId, payload]) => {
+      if (!tourId) return;
+      const safeClicks = Number.isFinite(payload?.clicks) ? Number(payload.clicks) : 0;
+      merged[tourId] = {
+        tourId,
+        slug: payload?.slug ?? base[tourId]?.slug ?? '',
+        clicks: safeClicks < 0 ? 0 : safeClicks,
+        lastClickedAt: payload?.lastClickedAt ?? base[tourId]?.lastClickedAt ?? null,
+      };
+    });
+  }
+  return merged;
 }
 
 function buildAuthEmail(identifier) {
@@ -1775,6 +1807,7 @@ const STORAGE_KEYS = {
   topups: 'sevenTravelTopUps',
   transportContacts: 'sevenTravelTransportContacts',
   supportMessages: 'sevenTravelSupportMessages',
+  tourAnalytics: 'sevenTravelTourAnalytics',
 };
 
 const INITIAL_USERS = [
@@ -1850,6 +1883,23 @@ export function AuthProvider({ children }) {
   const [supabaseUser, setSupabaseUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [tours, setTours] = useState(INITIAL_TOURS);
+  const [tourAnalytics, setTourAnalytics] = useState(() => {
+    const base = buildInitialTourAnalytics(INITIAL_TOURS);
+    if (typeof window === 'undefined') {
+      return base;
+    }
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEYS.tourAnalytics);
+      if (!raw) {
+        return base;
+      }
+      const parsed = JSON.parse(raw);
+      return mergeTourAnalyticsState(base, parsed);
+    } catch (error) {
+      console.warn('Không thể đọc thống kê lượt xem tour từ localStorage.', error);
+      return base;
+    }
+  });
   const [transportOptions, setTransportOptions] = useState(INITIAL_TRANSPORT);
   const [stayOptions, setStayOptions] = useState(INITIAL_STAYS);
   const [bookings, setBookings] = useState(INITIAL_BOOKINGS);
@@ -1857,6 +1907,45 @@ export function AuthProvider({ children }) {
   const [transportContacts, setTransportContacts] = useState(INITIAL_TRANSPORT_CONTACTS);
   const [supportMessages, setSupportMessages] = useState(INITIAL_SUPPORT_MESSAGES);
   const localizedTours = useMemo(() => localizeTours(tours, language), [tours, language]);
+
+  useEffect(() => {
+    setTourAnalytics((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      tours.forEach((tour) => {
+        if (!tour?.id) {
+          return;
+        }
+        const current = next[tour.id];
+        if (!current) {
+          next[tour.id] = {
+            tourId: tour.id,
+            slug: tour.slug ?? '',
+            clicks: 0,
+            lastClickedAt: null,
+          };
+          changed = true;
+          return;
+        }
+        if (tour.slug && current.slug !== tour.slug) {
+          next[tour.id] = { ...current, slug: tour.slug };
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [tours]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.tourAnalytics, JSON.stringify(tourAnalytics));
+    } catch (error) {
+      console.warn('Không thể lưu thống kê lượt xem tour vào localStorage.', error);
+    }
+  }, [tourAnalytics]);
 
   const currentUser = users.find((user) => user.id === currentUserId) ?? null;
 
@@ -2014,6 +2103,38 @@ export function AuthProvider({ children }) {
       console.warn('Không thể lưu dữ liệu hỗ trợ khách hàng.', error);
     }
   }, [supportMessages]);
+
+  const recordTourView = useCallback(
+    (tourId) => {
+      if (!tourId) {
+        return;
+      }
+      setTourAnalytics((prev) => {
+        const now = new Date().toISOString();
+        const matchedTour = tours.find((item) => item.id === tourId) ?? null;
+        const existing = prev?.[tourId] ?? {
+          tourId,
+          slug: matchedTour?.slug ?? '',
+          clicks: 0,
+          lastClickedAt: null,
+        };
+        return {
+          ...prev,
+          [tourId]: {
+            ...existing,
+            slug: matchedTour?.slug ?? existing.slug ?? '',
+            clicks: (existing.clicks ?? 0) + 1,
+            lastClickedAt: now,
+          },
+        };
+      });
+    },
+    [tours]
+  );
+
+  const resetTourAnalytics = useCallback(() => {
+    setTourAnalytics(buildInitialTourAnalytics(tours));
+  }, [tours]);
 
   useEffect(() => {
     if (!supabaseUser) {
@@ -2560,7 +2681,7 @@ export function AuthProvider({ children }) {
     return contact;
   };
 
-const submitSupportMessage = ({ message }) => {
+  const submitSupportMessage = ({ message }) => {
     if (!currentUser || currentUser.role !== 'customer') {
       throw new Error('Vui lòng đăng nhập bằng tài khoản khách hàng để trò chuyện với SEVEN TRAVEL.');
     }
@@ -2572,20 +2693,28 @@ const submitSupportMessage = ({ message }) => {
 
     const chatId = createId('support');
     const timestamp = new Date().toISOString();
-  const chatMessage = {
-    id: chatId,
-    userId: currentUser.id,
-    userName: currentUser.name,
-    message: trimmed,
-    createdAt: timestamp,
-    status: 'pending',
-    adminResponse: null,
-    adminRespondedAt: null,
-  };
+    const hasConversation = supportMessages.some((item) => item.userId === currentUser.id);
+    const autoReply = AUTO_SUPPORT_REPLY[language] ?? AUTO_SUPPORT_REPLY.vi;
 
-  setSupportMessages((prev) => [chatMessage, ...prev]);
-  return chatMessage;
-};
+    const chatMessage = {
+      id: chatId,
+      userId: currentUser.id,
+      userName: currentUser.name,
+      message: trimmed,
+      createdAt: timestamp,
+      status: 'pending',
+      adminResponse: null,
+      adminRespondedAt: null,
+    };
+
+    if (!hasConversation && autoReply?.message) {
+      chatMessage.adminResponse = autoReply.message;
+      chatMessage.adminRespondedAt = timestamp;
+    }
+
+    setSupportMessages((prev) => [chatMessage, ...prev]);
+    return chatMessage;
+  };
 
   const adminRespondSupport = ({ id, response }) => {
     if (!currentUser || currentUser.role !== 'admin') {
@@ -2863,7 +2992,18 @@ const submitSupportMessage = ({ message }) => {
     }
   };
 
-  const customers = useMemo(() => users.filter((user) => user.role === 'customer'), [users]);
+const AUTO_SUPPORT_REPLY = {
+  vi: {
+    message:
+      'SEVEN TRAVEL xin chào! Cảm ơn bạn đã liên hệ. Đội ngũ tư vấn sẽ phản hồi trong thời gian sớm nhất. Bạn có thể chia sẻ thêm nhu cầu cụ thể để chúng tôi hỗ trợ nhanh hơn nhé.',
+  },
+  en: {
+    message:
+      'Hi there! Thanks for reaching out to SEVEN TRAVEL. Our team will be with you shortly. Feel free to share more details so we can assist faster.',
+  },
+};
+
+const customers = useMemo(() => users.filter((user) => user.role === 'customer'), [users]);
 
   const value = useMemo(
     () => ({
@@ -2887,6 +3027,9 @@ const submitSupportMessage = ({ message }) => {
       users,
       customers,
       tours: localizedTours,
+      tourAnalytics,
+      recordTourView,
+      resetTourAnalytics,
       transportOptions,
       stayOptions,
       bookings,
@@ -2901,6 +3044,9 @@ const submitSupportMessage = ({ message }) => {
       users,
       customers,
       localizedTours,
+      tourAnalytics,
+      recordTourView,
+      resetTourAnalytics,
       transportOptions,
       stayOptions,
       bookings,
